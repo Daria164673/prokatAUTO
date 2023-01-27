@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee web-app_4_0.xsd" version="4.0">
+
+
+  <display-name>ProkatAUTO</display-name>
+
+  <context-param>
+    <param-name>jakarta.servlet.jsp.jstl.fmt.localizationContext</param-name>
+    <param-value>resources</param-value>
+  </context-param>
+
+  <!--============================================================
+    Session listener
+    =============================================================-->
+  <listener>
+    <listener-class>org.voroniuk.prokat.web.listener.SessionListener</listener-class>
+  </listener>
+
+  <!--============================================================
+   Encoding support filter
+   =============================================================-->
+  <filter>
+    <filter-name>EncodingFilter</filter-name>
+    <filter-class>org.voroniuk.prokat.web.filter.EncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>/WEB-INF/jsp/*</url-pattern>
+    <servlet-name>Controller</servlet-name>
+  </filter-mapping>
+
+  <!--============================================================
+Security filter.
+1) admin: admin commands
+2) customer: client commands
+3) commons: commands for all roles
+4) out-of-control: commands without access control
+Delimiter - space/tab
+=============================================================-->
+
+  <filter>
+    <filter-name>CommandAccessFilter</filter-name>
+    <filter-class>org.voroniuk.prokat.web.filter.CommandAccessFilter</filter-class>
+    <init-param>
+      <param-name>admin</param-name>
+      <param-value>account change_users_block users save_car delete_car
+      </param-value>
+    </init-param>
+    <init-param>
+      <param-name>manager</param-name>
+      <param-value>account repair_invoices repair_invoice return_from_repair saveRepairInvoice reject_order return_order
+      </param-value>
+    </init-param>
+    <init-param>
+      <param-name>customer</param-name>
+      <param-value>user_account account saveOrder pay_invoice pay</param-value>
+    </init-param>
+    <init-param>
+      <param-name>common</param-name>
+      <param-value>noCommand orders order cars car</param-value>
+    </init-param>
+    <init-param>
+      <param-name>out-of-control</param-name>
+      <param-value>login main changeLocale register logout</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>CommandAccessFilter</filter-name>
+    <servlet-name>Controller</servlet-name>
+  </filter-mapping>
+
+  <!--============================================================
+	Error page
+    =============================================================-->
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/WEB-INF/jsp/error_page.jsp</location>
+  </error-page>
+
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/jsp/error_page.jsp</location>
+  </error-page>
+
+  <!--============================================================
+    Tag library
+    =============================================================-->
+  <jsp-config>
+    <taglib>
+      <taglib-uri>mytags</taglib-uri>
+      <taglib-location>/WEB-INF/tld/mytag.tld</taglib-location>
+    </taglib>
+  </jsp-config>
+
+</web-app>

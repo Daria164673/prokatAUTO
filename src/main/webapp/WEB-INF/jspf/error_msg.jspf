@@ -1,0 +1,6 @@
+
+<c:if test="${msg!=null&&msg!=\"\"}">
+    <div class="alert alert-danger" role="alert">
+        ${msg}
+    </div>
+</c:if>

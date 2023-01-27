@@ -1,0 +1,3 @@
+<%@taglib prefix="m" uri="mytags" %>
+
+<m:pagination pageno="${pageNo}" total="${totalPages}" current="${current_page}"/>

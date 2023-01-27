@@ -1,0 +1,117 @@
+USE prokatauto;
+
+DROP TABLE users;
+CREATE TABLE users
+(
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    isBlocked boolean,
+    login VARCHAR(32),
+    pass VARCHAR(32),
+    role ENUM('customer', 'manager', 'admin'),
+    locale VARCHAR(5)
+);
+INSERT users(isBlocked, login, pass, role) //password - Daria
+VALUES
+(0, 'admin', 'fe3382745e2cf6d80fab177ad783bd2d', 'admin'),
+(0, 'manager', 'fe3382745e2cf6d80fab177ad783bd2d', 'manager');
+
+
+DROP TABLE brands;
+CREATE TABLE brands
+(
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(32)
+);
+INSERT brands(name)
+VALUES
+('Nissan'),
+('BMW'),
+('Mercedes'),
+('Toyota');
+
+
+
+DROP TABLE q_classes;
+CREATE TABLE q_classes
+(
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(32)
+);
+
+INSERT q_classes(name)
+VALUES
+('econom'),
+('standart'),
+('premium'),
+('sport');
+
+
+
+DROP TABLE cars;
+CREATE TABLE cars
+(
+        id INTEGER AUTO_INCREMENT PRIMARY KEY,
+        brand_id INT,
+        q_class_id INT,
+        model VARCHAR(32),
+        car_number VARCHAR(32),
+        curr_state ENUM('free','ordered','on_repair'),
+        FOREIGN KEY (brand_id)  REFERENCES brands (id),
+        FOREIGN KEY (q_class_id) REFERENCES q_classes (id)
+);
+
+INSERT cars(brand_id, q_class_id, model, car_number, curr_state)
+VALUES
+(1, 2, 'almera', 'BH0001TT', 'FREE'),
+(2, 4, 'X5', 'BH0002EC', 'FREE'),
+(3, 3, 'C200', 'BH0302EK', 'FREE'),
+(4, 3, 'Camry', 'BH5342TE', 'FREE'),
+(4, 2, 'Corolla', 'BH0342EE', 'FREE');
+
+
+DROP TABLE prices;
+CREATE TABLE prices
+(
+    car_id INT PRIMARY KEY,
+    price INT,
+    FOREIGN KEY (car_id)  REFERENCES cars (id) ON DELETE CASCADE
+);
+INSERT prices(car_id, price)
+VALUES
+(1, 49),
+(2, 1000),
+(3, 855),
+(4, 199),
+(5, 149);
+
+
+DROP TABLE orders;
+CREATE TABLE orders
+(
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+	date datetime,
+    user_id INT,
+	car_id INT,
+	passport_data VARCHAR(256),
+	with_driver boolean,
+	term INT,
+    state ENUM('new', 'paid', 'rejected', 'finished'),
+    reject_reason VARCHAR(256),
+    amount INT,
+    return_date datetime,
+	FOREIGN KEY (user_id)  REFERENCES users (id),
+	FOREIGN KEY (car_id)  REFERENCES cars (id)
+);
+
+DROP TABLE repair_invoices;
+CREATE TABLE repair_invoices
+(
+	id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    date datetime,
+	car_id INT,
+    repair_info varchar(256),
+    amount INT,
+    contractor VARCHAR(50),
+	return_date datetime,
+    FOREIGN KEY (car_id)  REFERENCES cars (id)
+);
