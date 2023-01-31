@@ -31,7 +31,7 @@ public class SaveCarCommand implements Command{
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.PAGE__CAR;
 
         Locale locale = (Locale) req.getSession().getAttribute("locale");
@@ -48,63 +48,35 @@ public class SaveCarCommand implements Command{
         String strId = req.getParameter("car_id");
 
         if (car_number==null || car_number.equals("")) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.car_number");
             req.setAttribute("msg", msg);
-
-            req.setAttribute("model", model);
-            req.setAttribute("car_number", car_number);
-            req.setAttribute("qualityClass", strQId);
-            req.setAttribute("brand", strBrandId);
-            req.setAttribute("price", strPrice);
-            req.setAttribute("car_id", strId);
             return forward;
         }
 
-        int brand_id = 0;
+        int brand_id;
         try{
             brand_id = Integer.parseInt(strBrandId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.brand_id");
             req.setAttribute("msg", msg);
-
-            req.setAttribute("model", model);
-            req.setAttribute("car_number", car_number);
-            req.setAttribute("qualityClass", strQId);
-            req.setAttribute("brand", strBrandId);
-            req.setAttribute("price", strPrice);
-            req.setAttribute("car_id", strId);
             return forward;
         }
 
-        int qClass_id = 0;
+        int qClass_id;
         try{
             qClass_id = Integer.parseInt(strQId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.qclass_id");
             req.setAttribute("msg", msg);
-
-            req.setAttribute("model", model);
-            req.setAttribute("car_number", car_number);
-            req.setAttribute("qualityClass", strQId);
-            req.setAttribute("brand", strBrandId);
-            req.setAttribute("price", strPrice);
-            req.setAttribute("car_id", strId);
             return forward;
         }
 
-        double price = 0;
+        double price;
         try{
             price = Double.parseDouble(strPrice);
         }catch (NumberFormatException e){
             msg = rb.getString("error.message.price");
             req.setAttribute("msg", msg);
-
-            req.setAttribute("model", model);
-            req.setAttribute("car_number", car_number);
-            req.setAttribute("qualityClass", strQId);
-            req.setAttribute("brand", strBrandId);
-            req.setAttribute("price", strPrice);
-            req.setAttribute("car_id", strId);
             return forward;
         }
 
@@ -113,15 +85,8 @@ public class SaveCarCommand implements Command{
             try{
                 car_id = Integer.parseInt(strId);
             }catch (NumberFormatException e){
-                msg = rb.getString("error.message");
+                msg = rb.getString("error.message.car_id");
                 req.setAttribute("msg", msg);
-
-                req.setAttribute("model", model);
-                req.setAttribute("car_number", car_number);
-                req.setAttribute("qualityClass", strQId);
-                req.setAttribute("brand", strBrandId);
-                req.setAttribute("price", strPrice);
-                req.setAttribute("car_id", strId);
                 return forward;
             }
         }
@@ -148,7 +113,7 @@ public class SaveCarCommand implements Command{
             if (carDAO.saveCar(car)) {
                 carDAO.insertCarPrice(car, car.getPrice());
             } else {
-                msg = rb.getString("error.message");
+                msg = rb.getString("error.message.sqlexecept");
                 req.setAttribute("msg", msg);
                 return forward;
             }
@@ -156,7 +121,7 @@ public class SaveCarCommand implements Command{
             if (carDAO.updateCar(car)) {
                 carDAO.setCarPrice(car, car.getPrice());
             }else {
-                msg = rb.getString("error.message");
+                msg = rb.getString("error.message.sqlexecept");
                 req.setAttribute("msg", msg);
                 return forward;
             }

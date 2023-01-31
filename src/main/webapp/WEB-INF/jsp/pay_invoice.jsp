@@ -140,36 +140,59 @@
                                                                     </div>
                                                                     <div class="panel-body">
                                                                         <form role="form" id="payment-form" method="POST" action="controller">
+<br>
                                                                             <div class="row">
-                                                                                <div class="col-xs-12">
-                                                                                    <div class="form-group">
+                                                                                <div class="col-xs-12  col-md-9">
+                                                                                    <div class="input-group">
                                                                                         <label for="cardNumber">CARD NUMBER</label>
                                                                                         <div class="input-group">
                                                                                             <input
                                                                                                 type="tel"
+                                                                                                pattern="[0-9\s]{13,19}"
+                                                                                                inputmode="numeric"
+                                                                                                maxlength="19"
+                                                                                                placeholder="XXXX XXXX XXXX XXXX"
                                                                                                 class="form-control"
                                                                                                 name="cardNumber"
-                                                                                                placeholder="Valid Card Number"
                                                                                                 autocomplete="cc-number"
                                                                                                 required autofocus
+                                                                                                onkeypress="return checkDigit(event)"
                                                                                             />
-                                                                                            <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+                                                                                            <span class="input-group-addon"> <i class="fa fa-credit-card fa-2x"></i></span>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+<br>
                                                                             <div class="row">
-                                                                                <div class="col-xs-7 col-md-7">
+                                                                                <div class="col-xs-7 col-md-4">
                                                                                     <div class="form-group">
-                                                                                        <label for="cardExpiry"><span class="hidden-xs">EXPIRATION</span><span class="visible-xs-inline">EXP</span> DATE</label>
+                                                                                        <label for="cardExpiry"><span class="hidden-xs"></span><span class="visible-xs-inline">EXP</span> DATE</label>
+                                                                                        <div class="input-group">
                                                                                         <input
                                                                                             type="tel"
                                                                                             class="form-control"
                                                                                             name="cardExpiry"
-                                                                                            placeholder="MM / YY"
+                                                                                            placeholder="MM"
                                                                                             autocomplete="cc-exp"
+                                                                                            maxlength="2"
+                                                                                            size="2"
                                                                                             required
+                                                                                            onkeypress="return checkDigit(event)"
                                                                                         />
+                                                                                        <br>${" / "}<br>
+                                                                                        <input
+                                                                                                 type="tel"
+                                                                                                 class="form-control"
+                                                                                                 name="cardExpiry"
+                                                                                                 placeholder="YY"
+                                                                                                 autocomplete="cc-exp"
+                                                                                                 maxlength="2"
+                                                                                                 size="2"
+                                                                                                 required
+                                                                                                 onkeypress="return checkDigit(event)"
+                                                                                             />
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div class="col-xs-5 col-md-5 pull-right">
@@ -180,23 +203,27 @@
                                                                                             class="form-control"
                                                                                             name="cardCVC"
                                                                                             placeholder="CVC"
+                                                                                            maxlength="3"
                                                                                             autocomplete="cc-csc"
                                                                                             required
+                                                                                            onkeypress="return checkDigit(event)"
                                                                                         />
+
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                            <br>
                                                                             <div class="row">
-                                                                                <div class="col-xs-12">
+                                                                                <div class="col-xs-12   col-md-9">
                                                                                     <div class="form-group">
                                                                                         <label for="couponCode">COUPON CODE</label>
                                                                                         <input type="text" class="form-control" name="couponCode" />
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-
+<br>
                                                                             <div class="row">
-                                                                                <div class="col-xs-12">
+                                                                                <div class="col-xs-7 col-md-4">
                                                                                             <input type="hidden" name="command" value="pay">
                                                                                              <input type="hidden" name="order_id" value="${order.id}">
                                                                                              <button class="btn btn-primary" onclick='submit()'>
@@ -445,6 +472,16 @@ body { margin-top:20px; }
                 return true;
             }
         });
+
+ function checkDigit(event) {
+     var code = (event.which) ? event.which : event.keyCode;
+
+     if ((code < 48 || code > 57) && (code > 31)) {
+         return false;
+     }
+
+     return true;
+ }
  </script>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

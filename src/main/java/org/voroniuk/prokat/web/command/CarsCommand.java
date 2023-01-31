@@ -17,6 +17,8 @@ import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,6 +91,20 @@ public class CarsCommand implements Command{
         }
 
         List<Car> cars = carDAO.findCars(brandsId, qClassId, sortMap,(pageNo - 1) * pageSize, pageSize);
+
+        String queryStr = req.getQueryString();
+        StringJoiner sj = new StringJoiner("&");
+        if (queryStr!=null) {
+            String[] params = queryStr.split("&");
+            for (String param: params) {
+                if (param.substring(0,4).equals("page")) {
+                    continue;
+                }
+                sj.add(param);
+            }
+        }
+
+        req.setAttribute("current_page", req.getRequestURI() + "?" + sj);
 
         req.setAttribute("pageNo", pageNo);
         req.setAttribute("totalPages", totalPages);

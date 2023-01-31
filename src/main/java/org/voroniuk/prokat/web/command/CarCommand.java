@@ -36,7 +36,7 @@ public class CarCommand implements Command{
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.PAGE__CAR;
 
         Locale locale = (Locale) req.getSession().getAttribute("locale");
@@ -46,11 +46,11 @@ public class CarCommand implements Command{
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("car_id");
-        int car_id = 0;
+        int car_id;
         try{
             car_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.car_id");
             req.setAttribute("msg", msg);
             return forward;
         }

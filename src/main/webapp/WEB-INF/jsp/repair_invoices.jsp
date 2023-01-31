@@ -6,7 +6,7 @@
 <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
 <div class="span7">
-<div class="widget stacked widget-table action-table">
+<div class="widget stacked widget-table action-table"  id="page_content">
 
                 <div class="widget-header">
 					<i class="icon-th-list"></i>
@@ -36,7 +36,7 @@
                                       <tr>
                                         <td>${repair.id}</td>
                                         <td>${repair.date}</td>
-                                        <td>${order.car.id} ${repair.car.brand} ${repair.car.model} ${repair.car.car_number}</td>
+                                        <td>${repair.car.id} ${repair.car.brand} ${repair.car.model} ${repair.car.car_number}</td>
                                         <td>${repair.contractor}</td>
                                         <td><fmt:formatNumber type="number" pattern="0.00" value="${repair.amount}"/></td>
                                         <td>${repair.repairInfo}</td>

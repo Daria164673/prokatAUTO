@@ -27,7 +27,7 @@ public class ChangeUsersBlockCommand implements Command {
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.PAGE__ERROR_PAGE;
 
         Locale locale = (Locale) req.getSession().getAttribute("locale");
@@ -37,24 +37,21 @@ public class ChangeUsersBlockCommand implements Command {
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("user_id");
-        int user_id = 0;
+        int user_id;
         try{
             user_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.user_id");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         String strIsBlock = req.getParameter("isBlocked_value");
-        boolean isBlock = false;
-        if (strIsBlock.equals("true")) {
-            isBlock = true;
-        }
+        boolean isBlock = strIsBlock.equals("true");
 
         UserDAO userDAO = new UserDAOimp();
         if (!userDAO.changeIsBlockedValueById(user_id, isBlock)) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.sqlexecept");
             req.setAttribute("msg", msg);
             return forward;
         }

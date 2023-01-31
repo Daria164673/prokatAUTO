@@ -5,12 +5,15 @@
 
 <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
-<div class="sidenav">
+<div class="sidenav" >
+
+    <div class="col-xs-15 col-md-12">
          <div class="login-main-text">
             <h2>ProkatAUTO</h2>
             <p><fmt:message key="register.label.register"/></p>
          </div>
       </div>
+    </div>
 
 <%@ include file="/WEB-INF/jspf/error_msg.jspf" %>
 

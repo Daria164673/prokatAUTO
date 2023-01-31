@@ -29,7 +29,7 @@ public class SaveOrderCommand implements Command{
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.PAGE__ORDER;
 
         Locale locale = (Locale) req.getSession().getAttribute("locale");
@@ -40,7 +40,7 @@ public class SaveOrderCommand implements Command{
 
         String withDriver = req.getParameter("withDriver");
         String strTerm = req.getParameter("term");
-        int term = 0;
+        int term;
         try{
             term = Integer.parseInt(strTerm);
         }catch (NumberFormatException e){
@@ -51,18 +51,18 @@ public class SaveOrderCommand implements Command{
 
         String email = req.getParameter("email");
         String passportData = req.getParameter("passportData");
-        if (passportData == null || passportData == "") {
+        if (passportData == null || passportData.equals("")) {
             msg = rb.getString("error.message.passportData");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         String strId = req.getParameter("car_id");
-        int car_id = 0;
+        int car_id;
         try{
             car_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.car_id");
             req.setAttribute("msg", msg);
             return forward;
         }
@@ -89,7 +89,7 @@ public class SaveOrderCommand implements Command{
         }
 
         if (!orderDAO.saveOrder(newDoc)) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.sqlexecept");
             req.setAttribute("msg", msg);
             return forward;
         }

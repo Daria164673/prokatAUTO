@@ -6,7 +6,7 @@
 <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
 <div class="span7">
-<div class="widget stacked widget-table action-table">
+<div class="widget stacked widget-table action-table"  id="page_content">
 
 				 <div class="widget-header">
 					<i class="icon-th-list"></i>

@@ -5,6 +5,8 @@
 
 <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
+<div class="form-group"  id="page_content">
+
 <c:set var="title" value="Error page" />
 <c:set var="msg" value="${errorMessage}" />
 
@@ -13,5 +15,7 @@
 
 <br>
         <%@ include file="/WEB-INF/jspf/error_msg.jspf" %>
+
+<\div>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

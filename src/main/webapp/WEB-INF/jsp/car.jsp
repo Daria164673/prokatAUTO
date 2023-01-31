@@ -84,7 +84,7 @@
                 	<label class="control-label col-sm-2" for="price"><fmt:message key="all.label.price"/></label>
                 	<div class="col-sm-15">
                 		<input type="number" class="form-control" id="price" name="price" min=0 step="0.01" pattern="0.00"
-                		        value="${car.price}" ${user.getRole().name()=="CUSTOMER"? "disabled":""}>
+                		        onkeypress="return checkDigit(event)" value="${car.price}" ${user.getRole().name()=="CUSTOMER"? "disabled":""}>
                 	</div>
                 </div>
 
@@ -126,7 +126,15 @@
 </div>
 
 <script>
+ function checkDigit(event) {
+     var code = (event.which) ? event.which : event.keyCode;
 
-</script>
+     if ((code < 48 || code > 57) && (code <> 2022)) {
+        return false;
+     }
+
+     return true;
+ }
+ </script>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

@@ -35,7 +35,8 @@
 				<div class="form-group">
 				  <label class="control-label col-sm-2" for="amount"><fmt:message key="all.label.amount"/></label>
 				  <div class="col-sm-10">
-					<input type="number" class="form-control" min=0 step="0.01" id="amount" placeholder="" name="amount">
+					<input type="number" class="form-control" min=0 step="0.01" id="amount"
+					            onkeypress="return checkDigit(event)" placeholder="" name="amount">
 				  </div>
 				</div>
 				<div class="form-group">
@@ -56,5 +57,17 @@
 		</form>
 	</div>
 </div>
+
+<script>
+ function checkDigit(event) {
+     var code = (event.which) ? event.which : event.keyCode;
+
+     if ((code < 48 || code > 57) && (code <> 2022)) {
+         return false;
+     }
+
+     return true;
+ }
+ </script>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

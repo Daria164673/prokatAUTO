@@ -30,7 +30,7 @@ public class ReturnFromRepairCarCommand implements Command{
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.COMMAND__REPAIR_INVOICES;
 
         RepairInvoiceDAO repairInvoiceDAO = new RepairInvoiceDAOimpl();
@@ -42,27 +42,27 @@ public class ReturnFromRepairCarCommand implements Command{
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("repair_id");
-        int repair_id = 0;
+        int repair_id;
         try{
             repair_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.repair_id");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         strId = req.getParameter("car_id");
-        int car_id = 0;
+        int car_id;
         try{
             car_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.car_id");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         if (!repairInvoiceDAO.updateReturnFromRepair(repair_id, car_id)) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.sqlexecept");
             req.setAttribute("msg", msg);
             return forward;
         }

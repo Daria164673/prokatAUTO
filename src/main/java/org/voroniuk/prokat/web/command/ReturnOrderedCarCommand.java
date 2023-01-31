@@ -28,7 +28,7 @@ public class ReturnOrderedCarCommand implements Command{
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.COMMAND__ACCOUNT;
 
         OrderDAO orderDAO = new OrderDAOimp();
@@ -40,27 +40,27 @@ public class ReturnOrderedCarCommand implements Command{
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("order_id");
-        int order_id = 0;
+        int order_id;
         try{
             order_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.order_id");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         strId = req.getParameter("car_id");
-        int car_id = 0;
+        int car_id;
         try{
             car_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.car_id");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         if (!orderDAO.updateReturnOrder(order_id, car_id)) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.sqlexecept");
             req.setAttribute("msg", msg);
             return forward;
         }

@@ -35,7 +35,8 @@
 				<div class="form-group">
 				  <label class="control-label col-sm-30" for="term"><fmt:message key="order.label.term"/></label>
 				  <div class="col-sm-20">
-					<input type="number" class="form-control" id="term" placeholder="Term in days" name="term" min ="0" >
+					<input type="number" class="form-control" id="term" placeholder="Term in days" name="term"
+					    onkeypress="return checkDigit(event)" min ="0" >
 				  </div>
 				</div>
 
@@ -58,7 +59,7 @@
                 <div class="form-group">
 				  <label class="control-label col-sm-20" for="email"><fmt:message key="all.label.email"/></label>
 				  <div class="col-sm-20">
-					<input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+					<input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
 				  </div>
 				</div>
 				<div class="form-group">
@@ -84,5 +85,17 @@
 		</form>
 	</div>
 </div>
+
+<script>
+ function checkDigit(event) {
+     var code = (event.which) ? event.which : event.keyCode;
+
+     if ((code < 48 || code > 57) && (code <> 2022)) {
+         return false;
+     }
+
+     return true;
+ }
+ </script>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

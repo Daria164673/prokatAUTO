@@ -9,7 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 
 <div class="span7">
-<div class="widget stacked widget-table action-table">
+<div class="widget stacked widget-table action-table"  id="page_content">
 
 				 <div class="widget-header">
 					<i class="icon-th-list"></i>
@@ -28,48 +28,53 @@
                     </form>
                 </c:if>
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-sm-12">
                       <form name="changeCurrent" action="controller" method="get">
-                        <input type="hidden" name="command" value="cars">
+                        <div class="form-group">
+                        <div class="input-group">
 
-                        <div class="form-group row">
-                            <div class="col-md-3">
+                          <input type="hidden" name="command" value="cars">
+
+                           <div class="col-md-3">
                                  <label><fmt:message key="cars.label.filter_by_brand"/></label>
                             </div>
                             <div class="col-md-6">
-                            <select class="selectpicker" multiple name="filter_brands">
-                                <c:forEach var="brand" items="${applicationScope.brands}">
+                                <select class="selectpicker" multiple name="filter_brands" onchange="submit()">
+                                    <c:forEach var="brand" items="${applicationScope.brands}">
                                       <c:set var="str_id">${brand.id}</c:set>
                                       <option ${(filter_brands!=null && filter_brands.contains(str_id))?" selected" : ""}
                                             value="${brand.id}">${brand.name}</option>
-                                </c:forEach>
-                                </div>
-                            </select>
-                             </div>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group">
+                        <div class="input-group">
                             <div class="col-md-3">
                                  <label><fmt:message key="cars.label.filter_by_qclass"/></label>
                             </div>
                             <div class="col-md-6">
-                            <select class="selectpicker" multiple name="filter_qClass">
+                                <select class="selectpicker" multiple name="filter_qClass"  onchange="submit()">
                                   <c:forEach var="qClass" items="${applicationScope.qClasses}">
                                       <c:set var="str_id">${qClass.id}</c:set>
                                       <option ${(filter_qClass!=null && filter_qClass.contains(str_id))?" selected" : ""}
                                                                                   value="${qClass.id}">${qClass.name}</option>
                                   </c:forEach>
-                            </select>
+                                </select>
                             </div>
+                         </div>
                          </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group">
+                        <div class="input-group">
                             <div class="col-md-3">
                                 <label><fmt:message key="cars.label.sort_by"/></label>
                             </div>
                             <div class="col-md-2">
-                                <select class="custom-select" name="sorting">
+                                <select class="custom-select" name="sorting"  onchange="submit()" value=${curr_sorting}>
                                     <option value="null">---<fmt:message key="cars.option.sort_default"/>---</option>
                                     <option value="name" ${curr_sorting=="name"?" selected" : ""} ><fmt:message key="cars.option.sort_name"/></option>
                                     <option value="name_desc" ${curr_sorting=="name_desc"?" selected" : ""} ><fmt:message key="cars.option.sort_name_desc"/></option>
@@ -77,6 +82,7 @@
                                     <option value="price_desc" ${curr_sorting=="price_desc"?" selected" : ""} ><fmt:message key="cars.option.sort_price_desc"/></option>
                                 </select>
                             </div>
+                        </div>
                         </div>
 
                         <button class="btn btn-primary" type="submit">
@@ -86,8 +92,7 @@
 
                 </div> <!-- /widget-filter -->
 
-<br>
-				<div class="col-md-6">
+				<div class="widget-content" id="table_content">
 
 					<table class="table table-striped table-bordered">
 						<thead>
@@ -177,7 +182,6 @@
 							</tbody>
 					</table>
 
-                    <c:set var="current_page" value="<%=Path.COMMAND__CARS%>"/>
                     <%@ include file="/WEB-INF/jspf/pagination.jspf" %>
 
 				</div> <!-- /widget-content -->
@@ -185,5 +189,10 @@
 			</div> <!-- /widget -->
 </div>
 
+<style>
+#table_content{
+    padding: 30px;
+}
+</style>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

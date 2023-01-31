@@ -6,12 +6,13 @@
 <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
 <div class="span7">
-<div class="widget stacked widget-table action-table">
+<div class="widget stacked widget-table action-table"  id="page_content">
 
 				<div class="widget-header">
 					<i class="icon-th-list"></i>
 					<h1><fmt:message key="orders.h.orders"/></h1>
 				</div> <!-- /widget-header -->
+<br>
 
 <%@ include file="/WEB-INF/jspf/error_msg.jspf" %>
 
@@ -72,6 +73,9 @@
                                 </c:forEach>
 							</tbody>
 						</table>
+
+                    <c:set var="current_page" value="<%=Path.COMMAND__USER_ACCOUNT%>"/>
+                    <%@ include file="/WEB-INF/jspf/pagination.jspf" %>
 
 				</div> <!-- /widget-content -->
 

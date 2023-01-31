@@ -7,11 +7,14 @@
 
 <div class="sidenav">
 
+     <div class="col-xs-15 col-md-12">
          <div class="login-main-text">
             <h2>ProkatAUTO</h2>
             <p><fmt:message key="main.label.LoginRegister"/></p>
          </div>
-      </div>
+     </div>
+
+</div>
 
 <%@ include file="/WEB-INF/jspf/error_msg.jspf" %>
 
@@ -28,6 +31,7 @@
                      <input type="text" class="form-control" placeholder="<fmt:message key="all.label.UserName"/>" name="login">
                   </div>
                   </div>
+
                   <div class="form-group">
                   	<div class="input-group">
                   		<div class="input-group-prepend">
@@ -36,16 +40,15 @@
                   	    <input class="form-control" placeholder="<fmt:message key="all.label.Password"/>" type="password" name="password">
                   </div>
 <br>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <button class="btn btn-primary" onclick='submit()'>
+                  <div class="form-group">
+                        <button class="btn btn-primary" onclick='submit()'>
                                      <i class="fa fa-sign-in-alt"></i>&nbsp;&nbsp;<fmt:message key="all.label.login"/>
                                </button>
 
                         <input type="button" class="btn btn-secondary" id="registerbutton" value="<fmt:message key="all.button.register"/>"
-                              onclick='location.href="controller?command=register&loginvalue="+login.value+""' />
+                               onclick='location.href="controller?command=register&loginvalue="+login.value+""' />
 
-                        </div>
+
                     </div>
 
                </form>

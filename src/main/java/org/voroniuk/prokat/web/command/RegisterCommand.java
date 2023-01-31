@@ -27,7 +27,7 @@ public class RegisterCommand implements Command {
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
-        String msg="";
+        String msg;
         String forward = Path.PAGE__REGISTER;
 
         String login = req.getParameter("login");
@@ -91,7 +91,7 @@ public class RegisterCommand implements Command {
         newUser.setLocale(locale);
 
         if (!userDAO.saveUser(newUser)) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.sqlexecept");
             req.setAttribute("msg", msg);
             req.setAttribute("login", login);
             return forward;

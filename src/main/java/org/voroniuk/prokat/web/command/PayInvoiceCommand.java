@@ -26,7 +26,7 @@ public class PayInvoiceCommand implements Command{
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
-        String msg="";
+        String msg;
         String forward = Path.PAGE__PAY_INVOICE;
 
         req.setAttribute("state_new", Order.State.NEW);
@@ -40,18 +40,18 @@ public class PayInvoiceCommand implements Command{
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("order_id");
-        int order_id = 0;
+        int order_id;
         try{
             order_id = Integer.parseInt(strId);
         }catch (NumberFormatException e){
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.order_id");
             req.setAttribute("msg", msg);
             return forward;
         }
 
         Order order = orderDAO.findOrderById(order_id);
         if (order == null) {
-            msg = rb.getString("error.message");
+            msg = rb.getString("error.message.cant_find_order_id") + order_id;
             req.setAttribute("msg", msg);
             return forward;
         }

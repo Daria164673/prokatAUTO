@@ -41,7 +41,7 @@ public class CarDAOimp implements CarDAO {
 
                 "WHERE  cars.id = ? ";
         try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
@@ -84,7 +84,7 @@ public class CarDAOimp implements CarDAO {
                 "LIMIT ?, ?; ";
 
         try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandId);
             statement.setInt(2, brandId);
@@ -118,7 +118,7 @@ public class CarDAOimp implements CarDAO {
                 "AND CASE WHEN ?>0 THEN q_class_id = ? ELSE TRUE END ";
 
         try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandId);
             statement.setInt(2, brandId);
@@ -178,7 +178,7 @@ public class CarDAOimp implements CarDAO {
         try {
             car.setCurr_state(Car.State.valueOf(resultSet.getString("curr_state").toUpperCase()));
         } catch (IllegalArgumentException e) {
-
+            LOG.warn(e);
         }
 
         return car;
@@ -209,7 +209,7 @@ public class CarDAOimp implements CarDAO {
             }
 
             LOG.info("Car has been added");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOG.warn(e);
             return false;
         }
@@ -318,7 +318,7 @@ public class CarDAOimp implements CarDAO {
         String sql =    "SELECT prices.price FROM prices " +
                 "WHERE prices.car_id=?";
         try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, car.getId());
             statement.executeQuery();
@@ -362,14 +362,10 @@ public class CarDAOimp implements CarDAO {
                 "LIMIT ?, ?; ";
 
         try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
-
-            //Array brandIdArray = connection.createArrayOf("INT", brandsId.toArray(new Integer[0]));
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandsId.size());
-            //statement.setArray(2, brandIdArray);
             statement.setInt(2, qClassId.size());
-            //statement.setInt(3, q_class_id);
             statement.setInt(3, start);
             statement.setInt(4, offset);
 
@@ -398,13 +394,9 @@ public class CarDAOimp implements CarDAO {
                 "AND CASE WHEN ?>0 THEN " + Utils.getINQueryText(qClassId, "q_class_id") + " ELSE TRUE END ";
 
         try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
-
-            //Array brandIdArray = connection.createArrayOf("INT", brandsId.toArray(new Integer[0]));
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandsId.size());
-            //statement.setArray(2, brandIdArray);
-            //statement.setInt(2, q_class_id);
             statement.setInt(2, qClassId.size());
 
             statement.executeQuery();
@@ -426,7 +418,7 @@ public class CarDAOimp implements CarDAO {
         String sql =  "SELECT cars.id as car_id, IFNULL(cars.curr_state,'') as curr_state " +
                         "FROM cars as cars " +
                         "WHERE  cars.id = ? ";
-        try (PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, car_id);
 
