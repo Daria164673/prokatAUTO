@@ -3,6 +3,7 @@ package org.voroniuk.prokat.connectionpool;
 import org.apache.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
+import org.voroniuk.prokat.utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,17 +30,12 @@ public class DBManager {
     private String password;
 
     private DBManager() {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(new File(this.getClass().getClassLoader().getResource("/").getPath() + "app.properties")));
+        Properties properties = Utils.getProperties();
+        if (properties!=null) {
             conUrl = properties.getProperty("connection.url");
             user = properties.getProperty("user");
             password = properties.getProperty("password");
             dataSource = getDataSource();
-
-
-        } catch (IOException e) {
-            LOG.error(e.getMessage());
         }
     }
 

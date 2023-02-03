@@ -2,6 +2,7 @@ package org.voroniuk.prokat.web.command;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.log4j.Logger;
 import org.voroniuk.prokat.Path;
 import org.voroniuk.prokat.dao.BrandDAO;
@@ -14,9 +15,11 @@ import org.voroniuk.prokat.dao.impl.QClassDAOimp;
 import org.voroniuk.prokat.entity.*;
 import org.voroniuk.prokat.web.Command;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 /**
  * Save car command. Save car to db, return cars command
@@ -94,6 +97,35 @@ public class SaveCarCommand implements Command{
         CarDAO carDAO = new CarDAOimp();
 
         Car car = new Car();
+
+        if (req.getServletContext().getAttribute("fileImgPath")!=null) {
+
+            try {
+                Part partImg = req.getPart("file");
+                if (partImg!= null && partImg.getSize() > 0) {
+
+                    String uploadPath = (String) req.getServletContext().getAttribute("fileImgPath");
+                    String uuidAsString = UUID.randomUUID().toString().replace("-", "");
+                    File upload = new File(uploadPath);
+                    if (!upload.exists()) {
+                        upload.mkdir();
+                    }
+                    try {
+                        partImg.write(uploadPath + File.separator + uuidAsString);
+                        car.setImgPath(uuidAsString);
+                    } catch (Exception e) {
+                        throw e;
+                    }
+                }
+            } catch (Exception e) {
+                LOG.warn(e);
+            }
+        }
+
+        if (car.getImgPath()==null) {
+            car.setImgPath(req.getParameter("imgPath"));
+        }
+
         car.setId(car_id);
 
         BrandDAO brandDAO = new BrandDAOimp();

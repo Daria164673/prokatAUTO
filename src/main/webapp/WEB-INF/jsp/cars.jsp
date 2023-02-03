@@ -85,9 +85,9 @@
                         </div>
                         </div>
 
-                        <button class="btn btn-primary" type="submit">
-                               <i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;<fmt:message key="cars.button.filter"/>
-                        </button>
+                        <!--<button class="btn btn-primary" type="submit"> -->
+                        <!--       <i class="fa fa-filter fa-lg"></i>&nbsp;&nbsp;<fmt:message key="cars.button.filter"/> -->
+                        <!--</button> -->
                       </form>
 
                 </div> <!-- /widget-filter -->
@@ -98,7 +98,8 @@
 						<thead>
 							<tr>
 								<th><fmt:message key="all.label.id"/></th>
-								<th><fmt:message key="all.label.brand"/></th>
+								<th><fmt:message key="all.label.img"/></th>
+                                <th><fmt:message key="all.label.brand"/></th>
                                 <th><fmt:message key="all.label.model"/></th>
                                 <th><fmt:message key="all.label.qclass"/></th>
 								<th><fmt:message key="all.label.carnumber"/></th>
@@ -112,6 +113,7 @@
                                 <c:forEach var="car" items="${cars}">
                                       <tr>
                                         <td>${car.id}</td>
+                                        <td><img src="data:image/jpg;base64,${car.base64Image}" width="180" height="120"/></td>
                                         <td>${car.brand}</td>
                                         <td>${car.model}</td>
                                         <td>${car.qualityClass}</td>

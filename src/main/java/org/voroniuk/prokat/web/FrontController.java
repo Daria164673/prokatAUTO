@@ -3,6 +3,7 @@ package org.voroniuk.prokat.web;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +14,12 @@ import org.voroniuk.prokat.dao.QClassDAO;
 import org.voroniuk.prokat.dao.impl.BrandDAOimp;
 import org.voroniuk.prokat.dao.impl.QClassDAOimp;
 import org.voroniuk.prokat.entity.SiteLocale;
+import org.voroniuk.prokat.utils.Utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Main controller of application. Retrieves from request and run execution of command.
@@ -23,6 +28,8 @@ import java.io.IOException;
  */
 
 @WebServlet(name = "Controller", urlPatterns = {"/", "/controller*"})
+@MultipartConfig(location="", fileSizeThreshold=1024*1024,
+        maxFileSize=1024*1024*10, maxRequestSize=1024*1024*5*5)
 public class FrontController extends HttpServlet {
 
     @Override
@@ -35,6 +42,8 @@ public class FrontController extends HttpServlet {
         getServletContext().setAttribute("locales", SiteLocale.values());
         getServletContext().setAttribute("brands", brandDAO.findAllBrands());
         getServletContext().setAttribute("qClasses", qClassDAO.findAllQClasses());
+
+        getServletContext().setAttribute("fileImgPath", Utils.getImgPath());
 
     }
 

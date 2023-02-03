@@ -1,6 +1,9 @@
 package org.voroniuk.prokat.entity;
 
-import java.io.Serializable;
+import org.voroniuk.prokat.utils.Utils;
+
+import java.io.*;
+import java.util.Base64;
 
 /**
  * Car entity
@@ -17,6 +20,9 @@ public class Car implements Serializable {
     private QualityClass qualityClass;
 
     private double price;
+
+    private String imgPath;
+    private String base64Image;
 
     private State curr_state;
 
@@ -86,6 +92,33 @@ public class Car implements Serializable {
         this.curr_state = curr_state;
     }
 
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
+        try (FileInputStream fis = new FileInputStream(Utils.getImgPath() + File.separator + imgPath)) {
+
+            byte[] all = fis.readAllBytes();
+
+            Base64.Encoder encoder = Base64.getEncoder();
+            String encoded = encoder.encodeToString(all);
+
+            setBase64Image(encoded);
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    public String getBase64Image() {
+        return base64Image;
+    }
+
+    public void setBase64Image(String base64Image) {
+        this.base64Image = base64Image;
+    }
 
     public enum State implements Serializable{
         FREE,

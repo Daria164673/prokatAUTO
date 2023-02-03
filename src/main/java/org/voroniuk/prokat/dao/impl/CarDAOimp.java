@@ -8,6 +8,7 @@ import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.QualityClass;
 import org.voroniuk.prokat.utils.Utils;
 
+import java.io.File;
 import java.sql.*;
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class CarDAOimp implements CarDAO {
 
     public Car findCarById(int id) {
         String sql =  "SELECT cars.id as car_id, brand_id, brands.name as brand_name, q_class_id, " +
-                "q_classes.name as q_class_name, model, car_number, IFNULL(prices.price,0) as price, " +
+                "q_classes.name as q_class_name, model, car_number, img, IFNULL(prices.price,0) as price, " +
                 "IFNULL(cars.curr_state,'') as curr_state " +
 
                 "FROM cars as cars " +
@@ -62,7 +63,7 @@ public class CarDAOimp implements CarDAO {
     public List<Car> findCars(int brandId, int q_class_id, Map<String, Boolean> sortMap, int start, int offset) {
         List<Car> res = new LinkedList<>();
         String sql =    "SELECT cars.id as car_id, brand_id, brands.name as brand_name, q_class_id, " +
-                "q_classes.name as q_class_name, model, car_number, IFNULL(prices.price,0) as price, " +
+                "q_classes.name as q_class_name, model, car_number, img, IFNULL(prices.price,0) as price, " +
                 "IFNULL(cars.curr_state,'') as curr_state "+
 
                 "FROM cars as cars " +
@@ -175,6 +176,8 @@ public class CarDAOimp implements CarDAO {
 
         car.setPrice((double) resultSet.getInt("price")/100);
 
+        car.setImgPath(resultSet.getString("img"));
+
         try {
             car.setCurr_state(Car.State.valueOf(resultSet.getString("curr_state").toUpperCase()));
         } catch (IllegalArgumentException e) {
@@ -186,7 +189,7 @@ public class CarDAOimp implements CarDAO {
 
     @Override
     public boolean saveCar(Car car) {
-        String sql = "INSERT INTO cars (brand_id, q_class_id, model, car_number, curr_state) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO cars (brand_id, q_class_id, model, car_number, curr_state, img) VALUES (?,?,?,?,?,?)";
 
         try (Connection connection = DBManager.getInstance().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -200,6 +203,7 @@ public class CarDAOimp implements CarDAO {
             } else {
                 statement.setString(5, car.getCurr_state().name().toLowerCase());
             }
+            statement.setString(6, car.getImgPath());
             statement.executeUpdate();
 
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
@@ -219,7 +223,7 @@ public class CarDAOimp implements CarDAO {
     @Override
     public boolean updateCar(Car car) {
         String sql = "UPDATE cars " +
-                "SET brand_id=?, q_class_id=?, model=?, car_number=? " +
+                "SET brand_id=?, q_class_id=?, model=?, car_number=?, img=? " +
                 "WHERE id=?; ";
 
         try (Connection connection = DBManager.getInstance().getConnection();
@@ -229,7 +233,8 @@ public class CarDAOimp implements CarDAO {
             statement.setInt(2, car.getQualityClass().getId());
             statement.setString(3, car.getModel());
             statement.setString(4, car.getCar_number());
-            statement.setInt(5, car.getId());
+            statement.setString(5, car.getImgPath());
+            statement.setInt(6, car.getId());
 
             statement.executeUpdate();
 
@@ -340,7 +345,7 @@ public class CarDAOimp implements CarDAO {
     public List<Car> findCars(List<String> brandsId, List<String> qClassId, Map<String, Boolean> sortMap, int start, int offset) {
         List<Car> res = new LinkedList<>();
         String sql =    "SELECT cars.id as car_id, brand_id, brands.name as brand_name, q_class_id, " +
-                "q_classes.name as q_class_name, model, car_number, IFNULL(prices.price,0) as price, " +
+                "q_classes.name as q_class_name, model, car_number, img, IFNULL(prices.price,0) as price, " +
                 "IFNULL(cars.curr_state,'') as curr_state "+
 
                 "FROM cars as cars " +
