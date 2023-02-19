@@ -1,17 +1,16 @@
 package org.voroniuk.prokat.utils;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.Resources;
 import org.apache.log4j.Logger;
 import org.voroniuk.prokat.connectionpool.DBManager;
+import org.voroniuk.prokat.entity.SiteLocale;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * Class for holding util methods of application
@@ -69,7 +68,8 @@ public class Utils {
                     sb.append(", ");
                 }
                 first = false;
-                sb.append(entry.getKey() + " ");
+                sb.append(entry.getKey());
+                sb.append(" ");
             }
         }
         return sb.toString();
@@ -82,6 +82,31 @@ public class Utils {
 
         return columnName + " IN (" + String.join(", ", filterList) + ") ";
 
+    }
+
+    public static Locale getCheckLocale(HttpServletRequest req) {
+        Locale locale = (Locale) req.getSession().getAttribute("locale");
+        if (locale == null) {
+            Cookie[] cookies = req.getCookies();
+            String cookieName = "locale";
+            if(cookies !=null) {
+                for(Cookie c: cookies) {
+                    if(cookieName.equals(c.getName())) {
+                        try {
+                            locale = SiteLocale.valueOf(c.getValue()).getLocale();
+                        } catch (IllegalArgumentException e) {
+                            LOG.warn(e);
+                        }
+                        break;
+                    }
+                }
+            }
+            if (locale==null) {
+                locale = Locale.getDefault();
+            }
+            req.getSession().setAttribute("locale", locale);
+        }
+        return locale;
     }
 
 }

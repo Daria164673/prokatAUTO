@@ -38,17 +38,6 @@ public class SessionListener implements HttpSessionListener {
     public void sessionDestroyed(HttpSessionEvent se) {
         String id = se.getSession().getId();
 
-        Locale locale = (Locale) se.getSession().getAttribute("locale");
-        if (locale == null) {
-            locale = Locale.getDefault();
-        }
-
-        User user = (User) se.getSession().getAttribute("user");
-        if (user != null) {
-            UserDAO userDAO = new UserDAOimp();
-            userDAO.setUsersLocale(user, locale);
-        }
-
         totalSessions--;
         LOG.debug("Session " + id + " destroyed. (total " + totalSessions + ")");
     }

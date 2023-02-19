@@ -27,14 +27,17 @@ import java.util.List;
 
 public class RepairInvoicesCommand implements Command{
 
+    private final RepairInvoiceDAO repairInvoiceDAO;
     private static final Logger LOG = Logger.getLogger(RepairInvoicesCommand.class);
+
+    public RepairInvoicesCommand(RepairInvoiceDAO repairInvoiceDAO) {
+        this.repairInvoiceDAO = repairInvoiceDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
         LOG.debug("Command starts");
-        String forward = Path.PAGE__ERROR_PAGE;
-        RepairInvoiceDAO repairInvoiceDAO = new RepairInvoiceDAOimpl();
 
         int pageNo;
         int pageSize = 10;
@@ -49,7 +52,7 @@ public class RepairInvoicesCommand implements Command{
 
         req.setAttribute("repairs", repairs);
 
-        forward = Path.PAGE__REPAIR_INVOICES;
+        String forward = Path.PAGE__REPAIR_INVOICES;
 
         LOG.debug("Command finished");
 

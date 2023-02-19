@@ -1,5 +1,7 @@
 package org.voroniuk.prokat.entity;
 
+import org.voroniuk.prokat.entity.builders.OrderBuilder;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -108,6 +110,10 @@ public class Order implements Serializable {
 
     public void setReject_reason(String reject_reason) {
         this.reject_reason = reject_reason;
+    }
+
+    public static OrderBuilder builder() {
+        return new OrderBuilder();
     }
 
     public enum State {

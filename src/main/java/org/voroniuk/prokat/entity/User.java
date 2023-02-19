@@ -1,7 +1,8 @@
 package org.voroniuk.prokat.entity;
 
+import org.voroniuk.prokat.entity.builders.UserBuilder;
+
 import java.io.Serializable;
-import java.util.Locale;
 
 /**
  * User entity
@@ -15,9 +16,9 @@ public class User implements Serializable {
     private String password;
     private boolean isBlocked;
     private Role role;
-
-    private Locale locale = Locale.getDefault();
-
+    private String email;
+    private String firstName;
+    private String lastName;
 
     public int getId() {
         return id;
@@ -68,12 +69,28 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public Locale getLocale() {
-        return locale;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLocale(Locale locale) {
-        this.locale = locale;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public enum Role implements Serializable {
@@ -81,4 +98,9 @@ public class User implements Serializable {
         MANAGER,
         ADMIN
     }
+
+    public static UserBuilder builder() {
+        return new UserBuilder();
+    }
+
 }

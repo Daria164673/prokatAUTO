@@ -30,15 +30,17 @@ import java.util.stream.Stream;
 
 public class CarsCommand implements Command{
 
+    private final CarDAO carDAO;
     private static final Logger LOG = Logger.getLogger(CarsCommand.class);
+
+    public CarsCommand(CarDAO carDAO) {
+        this.carDAO = carDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
         LOG.debug("Command starts");
-        String forward = Path.PAGE__ERROR_PAGE;
-
-        CarDAO carDAO = new CarDAOimp();
 
         String[] strBrandsId = req.getParameterValues("filter_brands");
         List<String> brandsId=new ArrayList<>();
@@ -117,7 +119,7 @@ public class CarsCommand implements Command{
 
         req.setAttribute("state_free", Car.State.FREE);
 
-        forward = Path.PAGE__CARS;
+        String forward = Path.PAGE__CARS;
 
         LOG.debug("Command finished");
 

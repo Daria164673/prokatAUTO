@@ -1,5 +1,7 @@
 package org.voroniuk.prokat.entity;
 
+import org.voroniuk.prokat.entity.builders.RepairInvoiceBuilder;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -73,5 +75,9 @@ public class RepairInvoice implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public static RepairInvoiceBuilder builder() {
+        return new RepairInvoiceBuilder();
     }
 }

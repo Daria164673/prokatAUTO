@@ -14,8 +14,7 @@
         <h3><fmt:message key="error.label.something_went_wrong"/> </h3>
 
 <br>
-        <%@ include file="/WEB-INF/jspf/error_msg.jspf" %>
 
-<\div>
+<%@ include file="/WEB-INF/jspf/error_msg.jspf" %>
 
 <%@ include file="/WEB-INF/jspf/bottom.jspf" %>

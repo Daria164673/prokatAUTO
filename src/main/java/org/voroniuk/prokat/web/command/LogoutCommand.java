@@ -27,6 +27,7 @@ public class LogoutCommand implements Command {
 
         String forward = Path.COMMAND__MAIN;
 
+        //invalidate session if existing
         HttpSession session = req.getSession(false);
         if (session!=null) {
             session.invalidate();

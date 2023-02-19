@@ -18,8 +18,13 @@ import org.voroniuk.prokat.web.Command;
  */
 
 public class OrderCommand implements Command{
+    private final CarDAO carDAO;
 
     private static final Logger LOG = Logger.getLogger(OrderCommand.class);
+
+    public OrderCommand(CarDAO carDAO) {
+        this.carDAO = carDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -34,13 +39,10 @@ public class OrderCommand implements Command{
             return Path.COMMAND__ACCOUNT;
         }
 
-        CarDAO carDAO = new CarDAOimp();
         Car car = carDAO.findCarById(id);
 
         req.setAttribute("car", car);
 
-        String redirect = Path.PAGE__ORDER;
-
-        return redirect;
+        return Path.PAGE__ORDER;
     }
 }

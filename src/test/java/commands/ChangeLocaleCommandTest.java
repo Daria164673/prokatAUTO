@@ -1,4 +1,4 @@
-package dao;
+package commands;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +18,13 @@ import static org.mockito.Mockito.*;
 
 public class ChangeLocaleCommandTest {
 
-    private static ChangeLocaleCommand changeLocaleCommand = new ChangeLocaleCommand();
+    private static final ChangeLocaleCommand changeLocaleCommand = new ChangeLocaleCommand();
 
     private HttpSession session;
     private HttpServletRequest request;
     private HttpServletResponse response;
 
-    private static Locale en = SiteLocale.EN.getLocale();
+    private static final Locale en = SiteLocale.EN.getLocale();
 
     @Before
     public void init(){
@@ -38,13 +38,13 @@ public class ChangeLocaleCommandTest {
     }
 
     @Test
-    public void shouldChangeLocale() throws IOException, ServletException {
+    public void shouldChangeLocale(){
         changeLocaleCommand.execute(request, response);
         verify(session).setAttribute("locale", en);
     }
 
     @Test
-    public void shouldReturnBack() throws IOException, ServletException {
+    public void shouldReturnBack() {
         String forward = changeLocaleCommand.execute(request, response);
         Assert.assertEquals(Path.COMMAND__MAIN, forward.replace("/",""));
     }

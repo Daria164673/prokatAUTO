@@ -14,21 +14,20 @@ import java.util.Locale;
  */
 
 public interface UserDAO {
-    public boolean saveUser(User user);
+    boolean saveUser(User user);
 
-    public User findUserByLogin(String login);
+    User findUserByLogin(String login);
 
-    public User findUserById(int id);
+    User findUserById(int id);
 
-    public List<User> findUsers(int start, int offset);
+    List<User> findUsers(int start, int offset);
 
-    public int countUsers();
+    int countUsers();
 
-    public List<User> findAllUsers();
+    List<User> findAllUsers();
 
-    public boolean deleteUser(User user);
+    boolean deleteUser(User user);
 
-    public boolean changeIsBlockedValueById(int user_id, boolean isBlockedValue);
+    boolean changeIsBlockedValueById(int user_id, boolean isBlockedValue);
 
-    public boolean setUsersLocale(User user, Locale locale);
 }

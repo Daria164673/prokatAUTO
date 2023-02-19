@@ -56,12 +56,6 @@
                         <div class="vr"></div>
                   </div>
 
-                <div class="form-group">
-				  <label class="control-label col-sm-20" for="email"><fmt:message key="all.label.email"/></label>
-				  <div class="col-sm-20">
-					<input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
-				  </div>
-				</div>
 				<div class="form-group">
 				  <label class="control-label col-sm-20" for="passportData"><fmt:message key="order.label.passportdata"/></label>
 				  <div class="col-sm-20">

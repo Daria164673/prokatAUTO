@@ -23,15 +23,17 @@ import java.util.List;
 
 public class UsersCommand implements Command{
 
+    private final UserDAO userDAO;
     private static final Logger LOG = Logger.getLogger(UsersCommand.class);
+
+    public UsersCommand(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
         LOG.debug("Command starts");
-        String forward = Path.PAGE__ERROR_PAGE;
-
-        UserDAO userDAO = new UserDAOimp();
 
         int pageNo;
         int pageSize = 10;
@@ -45,7 +47,7 @@ public class UsersCommand implements Command{
         req.setAttribute("totalPages", totalPages);
         req.setAttribute("users", users);
 
-        forward = Path.PAGE__USERS;
+        String forward = Path.PAGE__USERS;
 
         LOG.debug("Command finished");
 

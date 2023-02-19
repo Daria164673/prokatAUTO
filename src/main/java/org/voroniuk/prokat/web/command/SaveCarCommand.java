@@ -13,6 +13,7 @@ import org.voroniuk.prokat.dao.impl.CarDAOimp;
 import org.voroniuk.prokat.dao.impl.OrderDAOimp;
 import org.voroniuk.prokat.dao.impl.QClassDAOimp;
 import org.voroniuk.prokat.entity.*;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.io.File;
@@ -29,7 +30,17 @@ import java.util.UUID;
 
 public class SaveCarCommand implements Command{
 
+    private final CarDAO carDAO;
+    private final BrandDAO brandDAO;
+    private final QClassDAO qClassDAO;
+
     private static final Logger LOG = Logger.getLogger(SaveCarCommand.class);
+
+    public SaveCarCommand(CarDAO carDAO, BrandDAO brandDAO, QClassDAO qClassDAO) {
+        this.brandDAO = brandDAO;
+        this.qClassDAO = qClassDAO;
+        this.carDAO = carDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -37,10 +48,8 @@ public class SaveCarCommand implements Command{
         String msg;
         String forward = Path.PAGE__CAR;
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
+        Locale locale = Utils.getCheckLocale(req);
+
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String model = req.getParameter("model");
@@ -94,10 +103,7 @@ public class SaveCarCommand implements Command{
             }
         }
 
-        CarDAO carDAO = new CarDAOimp();
-
-        Car car = new Car();
-
+        String imgPath = null;
         if (req.getServletContext().getAttribute("fileImgPath")!=null) {
 
             try {
@@ -110,36 +116,30 @@ public class SaveCarCommand implements Command{
                     if (!upload.exists()) {
                         upload.mkdir();
                     }
-                    try {
-                        partImg.write(uploadPath + File.separator + uuidAsString);
-                        car.setImgPath(uuidAsString);
-                    } catch (Exception e) {
-                        throw e;
-                    }
+                    partImg.write(uploadPath + File.separator + uuidAsString);
+                    imgPath = uuidAsString;
                 }
             } catch (Exception e) {
                 LOG.warn(e);
             }
         }
 
-        if (car.getImgPath()==null) {
-            car.setImgPath(req.getParameter("imgPath"));
+        if (imgPath==null) {
+            imgPath = req.getParameter("imgPath");
         }
 
-        car.setId(car_id);
-
-        BrandDAO brandDAO = new BrandDAOimp();
         Brand brand = brandDAO.findBrandById(brand_id);
-        car.setBrand(brand);
-
-        QClassDAO qClassDAO = new QClassDAOimp();
         QualityClass q_class = qClassDAO.findQClassById(qClass_id);
-        car.setQualityClass(q_class);
 
-        car.setModel(model);
-        car.setCar_number(car_number);
-
-        car.setPrice(price);
+        Car car = Car.builder()
+                .id(car_id)
+                .brand(brand)
+                .qualityClass(q_class)
+                .model(model)
+                .car_number(car_number)
+                .price(price)
+                .imgPath(imgPath)
+                .build();
 
         if (car_id==0) {
             if (carDAO.saveCar(car)) {

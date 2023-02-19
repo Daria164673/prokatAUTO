@@ -20,7 +20,13 @@ import java.util.List;
  * @author D. Voroniuk
  */
 public class BrandDAOimp implements BrandDAO {
+    private final DBManager dbManager;
+
     private final Logger LOG = Logger.getLogger(BrandDAOimp.class);
+
+    public BrandDAOimp(DBManager dbManager) {
+        this.dbManager = dbManager;
+    }
 
     @Override
     public List<Brand> findAllBrands() {
@@ -28,8 +34,8 @@ public class BrandDAOimp implements BrandDAO {
         String sql =    "SELECT brands.id, brands.name " +
                 "FROM brands as brands ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -61,8 +67,8 @@ public class BrandDAOimp implements BrandDAO {
     public Brand findBrandById(int id) {
         String sql =    "SELECT brands.id, brands.name FROM brands " +
                 "WHERE id=?";
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
             statement.executeQuery();

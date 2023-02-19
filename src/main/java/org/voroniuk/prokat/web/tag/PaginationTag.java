@@ -26,10 +26,12 @@ public class PaginationTag extends TagSupport {
     private String current;
 
     @Override
-    public int doStartTag() throws JspException {
+    public int doStartTag() {
         JspWriter out = pageContext.getOut();
         Locale locale = (Locale) pageContext.getSession().getAttribute("locale");
-
+        if (locale==null) {
+            locale = Locale.getDefault();
+        }
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         try {
@@ -40,8 +42,8 @@ public class PaginationTag extends TagSupport {
                 out.print("</li>");
             }
 
-            int start = pageno - 2 > 1 ? pageno - 2 : 1;
-            int end = pageno + 2 < total ? pageno + 2 : total;
+            int start = Math.max(pageno - 2, 1);
+            int end = Math.min(pageno + 2, total);
 
             for (int i = start; i <= end; i++) {
 

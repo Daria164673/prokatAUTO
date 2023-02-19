@@ -8,7 +8,9 @@ CREATE TABLE users
     login VARCHAR(32),
     pass VARCHAR(32),
     role ENUM('customer', 'manager', 'admin'),
-    locale VARCHAR(5)
+    email varchar(60),
+    first_name varchar(40),
+    last_name varchar(40)
 );
 INSERT users(isBlocked, login, pass, role) //password - Daria
 VALUES

@@ -18,7 +18,12 @@ import org.voroniuk.prokat.web.Command;
 
 public class RepairInvoiceCommand implements Command{
 
+    private final CarDAO carDAO;
     private static final Logger LOG = Logger.getLogger(RepairInvoiceCommand.class);
+
+    public RepairInvoiceCommand(CarDAO carDAO) {
+        this.carDAO = carDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -33,14 +38,11 @@ public class RepairInvoiceCommand implements Command{
             return Path.COMMAND__ACCOUNT;
         }
 
-        CarDAO carDAO = new CarDAOimp();
         Car car = carDAO.findCarById(id);
         //LOG.debug("found car: " + car);
 
         req.setAttribute("car", car);
 
-        String redirect = Path.PAGE__REPAIR_INVOICE;
-
-        return redirect;
+        return Path.PAGE__REPAIR_INVOICE;
     }
 }

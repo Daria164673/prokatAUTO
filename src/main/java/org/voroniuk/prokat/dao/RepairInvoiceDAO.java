@@ -13,15 +13,16 @@ import java.util.List;
  */
 public interface RepairInvoiceDAO {
 
-    public boolean saveRepairInvoice(RepairInvoice repairInvoice);
+    boolean saveRepairInvoice(RepairInvoice repairInvoice);
 
-    public List<RepairInvoice> findRepairInvoices(int start, int offset);
+    List<RepairInvoice> findRepairInvoices(int start, int offset);
 
-    public  int countRepairInvoices();
+     int countRepairInvoices();
 
-    public RepairInvoice findRepairInvoiceById(int id);
+    RepairInvoice findRepairInvoiceById(int id);
 
-    public boolean updateReturnFromRepair(int repair_id, int car_id);
+    boolean updateReturnFromRepair(int repair_id, int car_id);
 
+    CarDAO getCarDAO();
 
 }

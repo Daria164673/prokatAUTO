@@ -23,19 +23,22 @@ import java.util.List;
  */
 
 public class UserAccountCommand implements Command {
+    private final OrderDAO orderDAO;
     private static final Logger LOG = Logger.getLogger(UserAccountCommand.class);
+
+    public UserAccountCommand(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
+    }
+
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
         LOG.debug("Command starts");
-        String forward = Path.PAGE__ERROR_PAGE;
-
-        OrderDAO orderDAO = new OrderDAOimp();
 
         User user = (User) req.getSession().getAttribute("user");
 
         int pageNo;
         int pageSize = 7;
-        int totalPages = (int) Math.ceil((double) orderDAO.countOrders(user.getId(), null) / pageSize);
+        int totalPages = Math.max((int) Math.ceil((double) orderDAO.countOrders(user.getId(), null) / pageSize), 1);
 
         pageNo = Utils.getPageNoFromRequest(req, "page", totalPages);
 
@@ -51,7 +54,7 @@ public class UserAccountCommand implements Command {
 
         req.setAttribute("state_free", Car.State.FREE);
 
-        forward = Path.PAGE__USER_ACCOUNT;
+        String forward = Path.PAGE__USER_ACCOUNT;
 
         LOG.debug("Command finished");
 

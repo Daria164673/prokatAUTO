@@ -3,41 +3,47 @@ package org.voroniuk.prokat.dao.impl;
 import org.apache.log4j.Logger;
 import org.voroniuk.prokat.connectionpool.DBManager;
 import org.voroniuk.prokat.dao.UserDAO;
-import org.voroniuk.prokat.entity.SiteLocale;
 import org.voroniuk.prokat.entity.User;
 
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * User Data Access Object implementation
  * provided methods for
  * finding, creating, deleting Users,
- * block/unblock users,
- * set user's locale
+ * block/unblock users
  *
  * @author D. Voroniuk
  */
 
 public class UserDAOimp implements UserDAO {
+    private final DBManager dbManager;
+
     private static final Logger LOG = Logger.getLogger(UserDAOimp.class);
+
+    public UserDAOimp(DBManager dbManager) {
+        this.dbManager = dbManager;
+    }
 
     /**
      * Add new user into db
-     * @param user
+     * @param user - saving instance
      */
     public boolean saveUser(User user) {
-        String sql = "INSERT INTO users (login, role, pass, isBlocked, locale) VALUES (?,?,?, false, ?)";
+        String sql = "INSERT INTO users (login, role, pass, isBlocked, email, first_name, last_name) VALUES (?,?,?, false,?,?,?)";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setString(1, user.getLogin());
-            statement.setString(2, user.getRole().toString().toLowerCase());
-            statement.setString(3, user.getPassword());
-            statement.setString(4, (user.getLocale()==null? Locale.getDefault() : user.getLocale()).getLanguage().toUpperCase());
+            int k=0;
+            statement.setString(++k, user.getLogin());
+            statement.setString(++k, user.getRole().toString().toLowerCase());
+            statement.setString(++k, user.getPassword());
+            statement.setString(++k, user.getEmail());
+            statement.setString(++k, user.getFirstName());
+            statement.setString(++k, user.getLastName());
             statement.executeUpdate();
 
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
@@ -55,10 +61,10 @@ public class UserDAOimp implements UserDAO {
     }
 
     public User findUserByLogin(String login) {
-        String sql =    "select users.id, pass, login, role, isBlocked, locale from users " +
+        String sql =    "select users.id, pass, login, role, isBlocked, email, first_name, last_name from users " +
                  "where login=?";
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, login);
             statement.executeQuery();
@@ -77,10 +83,10 @@ public class UserDAOimp implements UserDAO {
     }
 
     public User findUserById(int id) {
-        String sql =    "select id, isBlocked, login, pass, role, locale from users " +
+        String sql =    "select id, isBlocked, login, pass, role, email, first_name, last_name from users " +
                 "where users.id=?";
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
             statement.executeQuery();
@@ -100,12 +106,12 @@ public class UserDAOimp implements UserDAO {
     @Override
     public List<User> findUsers(int start, int offset) {
         List<User> res = new LinkedList<>();
-        String sql =    "SELECT id, isBlocked, login, pass, role, locale " +
+        String sql =    "SELECT id, isBlocked, login, pass, role, email, first_name, last_name " +
                 "FROM users as users " +
                 "LIMIT ?, ?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, start);
             statement.setInt(2, offset);
@@ -132,8 +138,8 @@ public class UserDAOimp implements UserDAO {
 
         String sql = "SELECT COUNT(*) FROM users as users ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -151,9 +157,9 @@ public class UserDAOimp implements UserDAO {
 
     public List<User> findAllUsers() {
         List<User> res = new LinkedList<>();
-        String sql =    "select id, isBlocked, login, pass, role, locale from users ";
+        String sql =    "select id, isBlocked, login, pass, role, email, first_name, last_name from users ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
@@ -170,7 +176,7 @@ public class UserDAOimp implements UserDAO {
     public boolean deleteUser(User user) {
         String sql = "DELETE FROM users WHERE login=?";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, user.getLogin());
@@ -186,33 +192,30 @@ public class UserDAOimp implements UserDAO {
 
     private User createUser(ResultSet resultSet)  throws SQLException{
 
-        String login = resultSet.getString("login");
-        String password = resultSet.getString("pass");
         User.Role role = null;
         try {
             role = User.Role.valueOf(resultSet.getString("role").toUpperCase());
         } catch (IllegalArgumentException e) {
+            LOG.warn(e);
         }
 
-        Locale locale = Locale.getDefault();
-        try {
-            locale = SiteLocale.valueOf(resultSet.getString("locale")).getLocale();
-        } catch (Exception e) {
-        }
-
-        User user = new User(login, password, role);
-        user.setId(resultSet.getInt("id"));
-        user.setIsBlocked(resultSet.getBoolean("isBlocked"));
-        user.setLocale(locale);
-
-        return user;
+        return User.builder()
+                .id(resultSet.getInt("id"))
+                .login(resultSet.getString("login"))
+                .password(resultSet.getString("pass"))
+                .blocked(resultSet.getBoolean("isBlocked"))
+                .role(role)
+                .email(resultSet.getString("email"))
+                .firstName(resultSet.getString("first_name"))
+                .lastName(resultSet.getString("last_name"))
+                .build();
     }
 
     @Override
     public boolean changeIsBlockedValueById(int user_id, boolean isBlockedValue) {
         String sql = "UPDATE users SET isBlocked=? WHERE id=?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setBoolean(1, isBlockedValue);
@@ -228,23 +231,4 @@ public class UserDAOimp implements UserDAO {
         return true;
     }
 
-    @Override
-    public boolean setUsersLocale(User user, Locale locale) {
-        String sql = "UPDATE users SET locale=? WHERE id=?; ";
-
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, locale.getLanguage().toUpperCase());
-            statement.setInt(2, user.getId());
-
-            statement.executeUpdate();
-
-            LOG.info("Save locale " + locale.toString() + " fo User " + user.getId());
-        } catch (SQLException e) {
-            LOG.warn(e);
-            return false;
-        }
-        return true;
-    }
 }

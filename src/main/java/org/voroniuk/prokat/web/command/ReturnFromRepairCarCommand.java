@@ -11,6 +11,7 @@ import org.voroniuk.prokat.dao.impl.OrderDAOimp;
 import org.voroniuk.prokat.dao.impl.RepairInvoiceDAOimpl;
 import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.Order;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Locale;
@@ -25,7 +26,13 @@ import java.util.ResourceBundle;
 
 public class ReturnFromRepairCarCommand implements Command{
 
+    private final RepairInvoiceDAO repairInvoiceDAO;
+
     private static final Logger LOG = Logger.getLogger(ReturnFromRepairCarCommand.class);
+
+    public ReturnFromRepairCarCommand(RepairInvoiceDAO repairInvoiceDAO) {
+        this.repairInvoiceDAO = repairInvoiceDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -33,12 +40,8 @@ public class ReturnFromRepairCarCommand implements Command{
         String msg;
         String forward = Path.COMMAND__REPAIR_INVOICES;
 
-        RepairInvoiceDAO repairInvoiceDAO = new RepairInvoiceDAOimpl();
+        Locale locale = Utils.getCheckLocale(req);
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("repair_id");

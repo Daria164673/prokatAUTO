@@ -22,7 +22,13 @@ import java.util.*;
  */
 
 public class CarDAOimp implements CarDAO {
+    private final DBManager dbManager;
+
     private static final Logger LOG = Logger.getLogger(CarDAOimp.class);
+
+    public CarDAOimp(DBManager dbManager) {
+        this.dbManager = dbManager;
+    }
 
     public Car findCarById(int id) {
         String sql =  "SELECT cars.id as car_id, brand_id, brands.name as brand_name, q_class_id, " +
@@ -41,7 +47,7 @@ public class CarDAOimp implements CarDAO {
                 "ON cars.id = prices.car_id " +
 
                 "WHERE  cars.id = ? ";
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
@@ -84,7 +90,7 @@ public class CarDAOimp implements CarDAO {
 
                 "LIMIT ?, ?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandId);
@@ -118,7 +124,7 @@ public class CarDAOimp implements CarDAO {
                 "WHERE CASE WHEN ?>0 THEN brand_id = ? ELSE TRUE END " +
                 "AND CASE WHEN ?>0 THEN q_class_id = ? ELSE TRUE END ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandId);
@@ -162,36 +168,33 @@ public class CarDAOimp implements CarDAO {
 
     public Car createCar(ResultSet resultSet) throws SQLException {
 
-        Car car = new Car();
-        car.setId(resultSet.getInt("car_id"));
-
         Brand brand = new Brand(resultSet.getString("brand_name"),resultSet.getInt("brand_id"));
-        car.setBrand(brand);
-
         QualityClass q_class = new QualityClass(resultSet.getString("q_class_name"), resultSet.getInt("q_class_id"));
-        car.setQualityClass(q_class);
 
-        car.setModel(resultSet.getString("model"));
-        car.setCar_number(resultSet.getString("car_number"));
-
-        car.setPrice((double) resultSet.getInt("price")/100);
-
-        car.setImgPath(resultSet.getString("img"));
-
+        Car.State currState=null;
         try {
-            car.setCurr_state(Car.State.valueOf(resultSet.getString("curr_state").toUpperCase()));
+            currState = Car.State.valueOf(resultSet.getString("curr_state").toUpperCase());
         } catch (IllegalArgumentException e) {
             LOG.warn(e);
         }
 
-        return car;
+        return Car.builder()
+                .id(resultSet.getInt("car_id"))
+                .brand(brand)
+                .qualityClass(q_class)
+                .model(resultSet.getString("model"))
+                .car_number(resultSet.getString("car_number"))
+                .price((double) resultSet.getInt("price")/100)
+                .imgPath(resultSet.getString("img"))
+                .curr_state(currState)
+                .build();
     }
 
     @Override
     public boolean saveCar(Car car) {
         String sql = "INSERT INTO cars (brand_id, q_class_id, model, car_number, curr_state, img) VALUES (?,?,?,?,?,?)";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, car.getBrand().getId());
@@ -226,7 +229,7 @@ public class CarDAOimp implements CarDAO {
                 "SET brand_id=?, q_class_id=?, model=?, car_number=?, img=? " +
                 "WHERE id=?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, car.getBrand().getId());
@@ -250,7 +253,7 @@ public class CarDAOimp implements CarDAO {
     public boolean deleteCarById(int car_id) {
         String sql = "DELETE FROM cars WHERE id=?";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, car_id);
@@ -268,7 +271,7 @@ public class CarDAOimp implements CarDAO {
     public boolean updateCarPrice(Car car, double price) {
         String sql = "UPDATE prices SET price=? WHERE car_id=?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, (int) (car.getPrice()*100));
@@ -298,7 +301,7 @@ public class CarDAOimp implements CarDAO {
     public boolean insertCarPrice(Car car, double price) {
         String sql = "INSERT INTO prices (car_id, price) VALUES (?,?)";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setInt(1, car.getId());
@@ -322,7 +325,7 @@ public class CarDAOimp implements CarDAO {
     public Integer findCarPrice(Car car) {
         String sql =    "SELECT prices.price FROM prices " +
                 "WHERE prices.car_id=?";
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, car.getId());
@@ -366,7 +369,7 @@ public class CarDAOimp implements CarDAO {
 
                 "LIMIT ?, ?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandsId.size());
@@ -398,7 +401,7 @@ public class CarDAOimp implements CarDAO {
                 "WHERE CASE WHEN ?>0 THEN " + Utils.getINQueryText(brandsId, "brand_id") + " ELSE TRUE END " +
                 "AND CASE WHEN ?>0 THEN " + Utils.getINQueryText(qClassId, "q_class_id") + " ELSE TRUE END ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, brandsId.size());

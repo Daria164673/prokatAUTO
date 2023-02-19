@@ -13,6 +13,7 @@ import org.voroniuk.prokat.dao.impl.QClassDAOimp;
 import org.voroniuk.prokat.entity.Brand;
 import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.QualityClass;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Locale;
@@ -26,7 +27,12 @@ import java.util.ResourceBundle;
 
 public class DeleteCarCommand implements Command{
 
+    private final CarDAO carDAO;
     private static final Logger LOG = Logger.getLogger(DeleteCarCommand.class);
+
+    public DeleteCarCommand(CarDAO carDAO) {
+        this.carDAO = carDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -34,10 +40,8 @@ public class DeleteCarCommand implements Command{
         String msg;
         String forward = Path.PAGE__CARS;
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
+        Locale locale = Utils.getCheckLocale(req);
+
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("car_id");
@@ -49,8 +53,6 @@ public class DeleteCarCommand implements Command{
             req.setAttribute("msg", msg);
             return forward;
         }
-
-        CarDAO carDAO = new CarDAOimp();
 
         if (!carDAO.deleteCarById(car_id)) {
             msg = rb.getString("error.message.sqlexecept");

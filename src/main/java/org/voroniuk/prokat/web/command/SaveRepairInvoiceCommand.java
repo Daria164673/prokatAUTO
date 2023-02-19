@@ -12,6 +12,7 @@ import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.Order;
 import org.voroniuk.prokat.entity.RepairInvoice;
 import org.voroniuk.prokat.entity.User;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Date;
@@ -26,7 +27,12 @@ import java.util.ResourceBundle;
 
 public class SaveRepairInvoiceCommand implements Command{
 
+    private final RepairInvoiceDAO repairInvoiceDAO;
     private static final Logger LOG = Logger.getLogger(SaveRepairInvoiceCommand.class);
+
+    public SaveRepairInvoiceCommand(RepairInvoiceDAO repairInvoiceDAO) {
+        this.repairInvoiceDAO = repairInvoiceDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -34,10 +40,8 @@ public class SaveRepairInvoiceCommand implements Command{
         String msg;
         String forward = Path.PAGE__REPAIR_INVOICE;
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
+        Locale locale = Utils.getCheckLocale(req);
+
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String repairInfo = req.getParameter("repairInfo");
@@ -66,21 +70,18 @@ public class SaveRepairInvoiceCommand implements Command{
             return forward;
         }
 
-        CarDAOimp carDAO = new CarDAOimp();
-        Car car = carDAO.findCarById(car_id);
+        Car car = repairInvoiceDAO.getCarDAO().findCarById(car_id);
         if (car == null) {
             return forward;
         }
 
-        RepairInvoiceDAO repairInvoiceDAO = new RepairInvoiceDAOimpl();
-
-        RepairInvoice newDoc = new RepairInvoice();
-        newDoc.setCar(car);
-
-        newDoc.setDate(new Date(System.currentTimeMillis()));
-        newDoc.setRepairInfo(repairInfo);
-        newDoc.setAmount(amount);
-        newDoc.setContractor(contractor);
+        RepairInvoice newDoc = RepairInvoice.builder()
+                .car(car)
+                .date(new Date(System.currentTimeMillis()))
+                .repairInfo(repairInfo)
+                .amount(amount)
+                .contractor(contractor)
+                .build();
 
         if (!repairInvoiceDAO.saveRepairInvoice(newDoc)) {
             msg = rb.getString("error.message.sqlexecept");

@@ -11,6 +11,7 @@ import org.voroniuk.prokat.dao.impl.OrderDAOimp;
 import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.Order;
 import org.voroniuk.prokat.entity.User;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Date;
@@ -26,7 +27,12 @@ import java.util.ResourceBundle;
 
 public class RejectOrderCommand implements Command{
 
+    private final OrderDAO orderDAO;
     private static final Logger LOG = Logger.getLogger(RejectOrderCommand.class);
+
+    public RejectOrderCommand(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -34,13 +40,8 @@ public class RejectOrderCommand implements Command{
         String msg;
         String forward = Path.COMMAND__ACCOUNT;
 
-        OrderDAO orderDAO = new OrderDAOimp();
-        CarDAO carDAO = new CarDAOimp();
+        Locale locale = Utils.getCheckLocale(req);
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String reject_reason = req.getParameter("reject_reason");

@@ -34,10 +34,9 @@ public class ChangeLocaleCommand implements Command {
         Locale locale = SiteLocale.valueOf(req.getParameter("choosenLang")).getLocale();
         req.getSession().setAttribute("locale", locale);
 
-        User user = (User) req.getSession().getAttribute("user");
-        if (user!=null) {
-            user.setLocale(locale);
-        }
+        // save to Cookies
+        Cookie cookie = new Cookie("locale", req.getParameter("choosenLang"));
+        resp.addCookie(cookie);
 
         LOG.debug("Locale changed to " + locale);
 

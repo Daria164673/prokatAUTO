@@ -23,7 +23,12 @@ import java.util.List;
  */
 
 public class QClassDAOimp implements QClassDAO {
+    private final DBManager dbManager;
     private final Logger LOG = Logger.getLogger(QClassDAOimp.class);
+
+    public QClassDAOimp(DBManager dbManager) {
+        this.dbManager = dbManager;
+    }
 
     @Override
     public List<QualityClass> findAllQClasses() {
@@ -31,8 +36,8 @@ public class QClassDAOimp implements QClassDAO {
         String sql =    "SELECT q_classes.id, q_classes.name " +
                 "FROM q_classes as q_classes ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -64,8 +69,8 @@ public class QClassDAOimp implements QClassDAO {
     public QualityClass findQClassById(int id) {
         String sql =    "SELECT q_classes.id, q_classes.name FROM q_classes " +
                 "WHERE id=?";
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
             statement.executeQuery();

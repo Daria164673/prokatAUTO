@@ -1,5 +1,7 @@
 package org.voroniuk.prokat.entity;
 
+import org.voroniuk.prokat.entity.builders.CarBuilder;
+import org.voroniuk.prokat.entity.builders.UserBuilder;
 import org.voroniuk.prokat.utils.Utils;
 
 import java.io.*;
@@ -118,6 +120,10 @@ public class Car implements Serializable {
 
     public void setBase64Image(String base64Image) {
         this.base64Image = base64Image;
+    }
+
+    public static CarBuilder builder() {
+        return new CarBuilder();
     }
 
     public enum State implements Serializable{

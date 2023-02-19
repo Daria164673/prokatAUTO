@@ -7,6 +7,7 @@ import org.voroniuk.prokat.Path;
 import org.voroniuk.prokat.dao.OrderDAO;
 import org.voroniuk.prokat.dao.impl.OrderDAOimp;
 import org.voroniuk.prokat.entity.Order;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Locale;
@@ -21,7 +22,13 @@ import java.util.ResourceBundle;
 
 public class PayInvoiceCommand implements Command{
 
+    private final OrderDAO orderDAO;
+
     private static final Logger LOG = Logger.getLogger(PayInvoiceCommand.class);
+
+    public PayInvoiceCommand(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -31,12 +38,8 @@ public class PayInvoiceCommand implements Command{
 
         req.setAttribute("state_new", Order.State.NEW);
 
-        OrderDAO orderDAO = new OrderDAOimp();
+        Locale locale = Utils.getCheckLocale(req);
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("order_id");
@@ -46,14 +49,14 @@ public class PayInvoiceCommand implements Command{
         }catch (NumberFormatException e){
             msg = rb.getString("error.message.order_id");
             req.setAttribute("msg", msg);
-            return forward;
+            return Path.PAGE__ERROR_PAGE;
         }
 
         Order order = orderDAO.findOrderById(order_id);
         if (order == null) {
             msg = rb.getString("error.message.cant_find_order_id") + order_id;
             req.setAttribute("msg", msg);
-            return forward;
+            return Path.PAGE__ERROR_PAGE;
         }
         req.setAttribute("order", order);
 

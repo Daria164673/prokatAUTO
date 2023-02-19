@@ -19,6 +19,7 @@
                 <c:if test="${user.getRole().name()==\"ADMIN\"}">
                     <form class="tdform" action="controller" method="get">
                          <input type="hidden" name="command" value="register">
+                         <input type="hidden" name="role" value="MANAGER">
 
                         <button class="btn btn-primary" type="submit">
                              <i class="fa fa-plus fa-lg"></i>&nbsp;&nbsp;<fmt:message key="users.button.newmanager"/>
@@ -34,7 +35,9 @@
 							<tr>
 								<th><fmt:message key="all.label.id"/></th>
 								<th><fmt:message key="all.label.login"/></th>
-                                <th><fmt:message key="users.th.lang"/></th>
+                                <th><fmt:message key="all.label.email"/></th>
+                                <th><fmt:message key="all.label.first_name"/></th>
+                                <th><fmt:message key="all.label.last_name"/></th>
                                 <th><fmt:message key="all.label.role"/></th>
 							    <th class="td-actions"><fmt:message key="all.label.action"/></th>
 							</tr>
@@ -45,7 +48,9 @@
                                       <tr>
                                         <td>${user_item.id}</td>
                                         <td>${user_item.login}</td>
-                                        <td>${user_item.locale.getLanguage().toUpperCase()}</td>
+                                        <td>${user_item.email}</td>
+                                        <td>${user_item.firstName}</td>
+                                        <td>${user_item.lastName}</td>
                                         <td>${user_item.role}</td>
                                         <c:if test="${user_item.isBlocked == true && user.getRole().name()==\"ADMIN\"}">
                                              <td>

@@ -24,14 +24,17 @@ import java.util.List;
 
 public class OrdersCommand implements Command{
 
+    private final OrderDAO orderDAO;
     private static final Logger LOG = Logger.getLogger(OrdersCommand.class);
+
+    public OrdersCommand(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
         LOG.debug("Command starts");
-        String forward = Path.PAGE__ERROR_PAGE;
-        OrderDAO orderDAO = new OrderDAOimp();
 
         User user = (User) req.getSession().getAttribute("user");
 
@@ -58,7 +61,7 @@ public class OrdersCommand implements Command{
         req.setAttribute("state_finished", Order.State.FINISHED);
         req.setAttribute("true", true);
 
-        forward = Path.PAGE__ORDERS;
+        String forward = Path.PAGE__ORDERS;
 
         LOG.debug("Command finished");
 

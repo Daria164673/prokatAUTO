@@ -31,18 +31,21 @@ import java.util.ResourceBundle;
 
 public class CarCommand implements Command{
 
+    private final CarDAO carDAO;
     private static final Logger LOG = Logger.getLogger(CarCommand.class);
+
+    public CarCommand(CarDAO carDAO) {
+        this.carDAO = carDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
 
         String msg;
-        String forward = Path.PAGE__CAR;
+        String forward = Path.PAGE__ERROR_PAGE;
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
+        Locale locale = Utils.getCheckLocale(req);
+
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("car_id");
@@ -55,7 +58,6 @@ public class CarCommand implements Command{
             return forward;
         }
 
-        CarDAO carDAO = new CarDAOimp();
         Car car = carDAO.findCarById(car_id);
 
         String copy = req.getParameter("copy");
@@ -65,6 +67,9 @@ public class CarCommand implements Command{
         }
         req.setAttribute("car", car);
 
+        forward = Path.PAGE__CAR;
+
         return forward;
     }
+
 }

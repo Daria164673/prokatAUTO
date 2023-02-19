@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.voroniuk.prokat.connectionpool.DBManager;
 import org.voroniuk.prokat.dao.BrandDAO;
 import org.voroniuk.prokat.dao.QClassDAO;
 import org.voroniuk.prokat.dao.impl.BrandDAOimp;
@@ -36,8 +37,10 @@ public class FrontController extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        BrandDAO brandDAO = new BrandDAOimp();
-        QClassDAO qClassDAO = new QClassDAOimp();
+        DBManager dbManager = DBManager.getInstance();
+
+        BrandDAO brandDAO = new BrandDAOimp(dbManager);
+        QClassDAO qClassDAO = new QClassDAOimp(dbManager);
 
         getServletContext().setAttribute("locales", SiteLocale.values());
         getServletContext().setAttribute("brands", brandDAO.findAllBrands());
@@ -64,10 +67,15 @@ public class FrontController extends HttpServlet {
         String resultPage;
 
         RequestHelper helper = new RequestHelper(req);
-        Command command =  helper.getCommand();
+        Command command = helper.getCommand();
 
         // delegate request to a command object helper
-        resultPage = command.execute(req, resp);
+        try {
+            resultPage = command.execute(req, resp);
+        } catch (Exception e) {
+            LOG.error("cannot execute command " + command, e);
+            throw e;
+        }
 
         RequestDispatcher dispatcher = req.getRequestDispatcher(resultPage);
         resp.setStatus(resp.SC_TEMPORARY_REDIRECT);
@@ -76,8 +84,8 @@ public class FrontController extends HttpServlet {
                 dispatcher.forward(req, resp);
             } catch (Exception e) {
                 LOG.error("cannot open page " + resultPage, e);
+                throw e;
             }
-
         }
     }
 }

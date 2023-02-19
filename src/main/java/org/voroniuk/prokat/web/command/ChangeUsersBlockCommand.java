@@ -9,6 +9,7 @@ import org.voroniuk.prokat.dao.UserDAO;
 import org.voroniuk.prokat.dao.impl.CarDAOimp;
 import org.voroniuk.prokat.dao.impl.UserDAOimp;
 import org.voroniuk.prokat.entity.SiteLocale;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Locale;
@@ -22,7 +23,12 @@ import java.util.ResourceBundle;
  */
 
 public class ChangeUsersBlockCommand implements Command {
+    private final UserDAO userDAO;
     private static final Logger LOG = Logger.getLogger(ChangeUsersBlockCommand.class);
+
+    public ChangeUsersBlockCommand(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -30,10 +36,8 @@ public class ChangeUsersBlockCommand implements Command {
         String msg;
         String forward = Path.PAGE__ERROR_PAGE;
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
+        Locale locale = Utils.getCheckLocale(req);
+
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("user_id");
@@ -49,7 +53,6 @@ public class ChangeUsersBlockCommand implements Command {
         String strIsBlock = req.getParameter("isBlocked_value");
         boolean isBlock = strIsBlock.equals("true");
 
-        UserDAO userDAO = new UserDAOimp();
         if (!userDAO.changeIsBlockedValueById(user_id, isBlock)) {
             msg = rb.getString("error.message.sqlexecept");
             req.setAttribute("msg", msg);

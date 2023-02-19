@@ -24,37 +24,60 @@
                   <input type="hidden" name="command" value="register"/>
 
                   <c:if test="${user.getRole().name()==\"ADMIN\"}">
-                    <input type="hidden" name="role" value="MANAGER"/>
+                    <input type="hidden" name="role" value="${role}"/>
                   </c:if>
 
                    <div class="form-group">
-                   	<div class="input-group">
-                   	  <div class="input-group-prepend">
-                      	 <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-                      </div>
-                      <input type="text" class="form-control" placeholder="<fmt:message key="all.label.UserName"/>" name="login" value="${login}">
-                   </div>
+                   	 <div class="input-group">
+                          <div class="input-group-prepend">
+                             <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                          </div>
+                          <input type="text" class="form-control" placeholder="<fmt:message key="all.label.UserName"/>" name="login" value="${login}">
+                     </div>
                    </div>
 
                   <div class="form-group">
                   	<div class="input-group">
                   		<div class="input-group-prepend">
                   		    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-                  		 </div>
+                  		</div>
                   	    <input class="form-control" placeholder="<fmt:message key="all.label.Password"/>" type="password" name="password">
+                    </div>
                   </div>
-<br>
+
                   <div class="form-group">
                   	<div class="input-group">
                   		<div class="input-group-prepend">
                   		    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-                  		 </div>
+                  		</div>
                   	    <input class="form-control" placeholder="<fmt:message key="register.label.confirm"/>" type="password" name="confirm">
+                    </div>
                   </div>
 <br>
+                  <div class="form-group">
+                  	<div class="input-group">
+                  	    <div class="input-group-prepend">
+                              <span class="input-group-text"> <i class="fa fa-at"></i> </span>
+                        </div>
+                  	    <input class="form-control" placeholder="<fmt:message key="all.label.email"/>" type="email" name="email">
+                    </div>
+                  </div>
+<br>
+                  <div class="form-group">
+                   	<div class="input-group">
+                   	    <input class="form-control" placeholder="<fmt:message key="all.label.first_name"/>" type="text" name="firstname">
+                     </div>
+                  </div>
+
+                   <div class="form-group">
+                    	<div class="input-group">
+                    	    <input class="form-control" placeholder="<fmt:message key="all.label.last_name"/>" type="text" name="lastname">
+                      </div>
+                  </div>
+
                   <button class="btn btn-primary" onclick='submit()'>
                          <i class="fas fa-user-check"></i>&nbsp;&nbsp;<fmt:message key="all.button.register"/>
-                    </button>
+                  </button>
                </form>
             </div>
          </div>

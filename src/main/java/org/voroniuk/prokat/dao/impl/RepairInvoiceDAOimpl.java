@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.voroniuk.prokat.connectionpool.DBManager;
 import org.voroniuk.prokat.dao.CarDAO;
 import org.voroniuk.prokat.dao.RepairInvoiceDAO;
+import org.voroniuk.prokat.dao.UserDAO;
 import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.Order;
 import org.voroniuk.prokat.entity.RepairInvoice;
@@ -26,7 +27,14 @@ import java.util.Locale;
 
 public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
 
+    private final DBManager dbManager;
+    private final CarDAO carDAO;
     private static final Logger LOG = Logger.getLogger(SaveOrderCommand.class);
+
+    public RepairInvoiceDAOimpl(DBManager dbManager, CarDAO carDAO) {
+        this.dbManager = dbManager;
+        this.carDAO = carDAO;
+    }
 
     /**
      * saveRepairInvoice method - insert repair invoice into db,
@@ -42,14 +50,12 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
                         "repair_info, amount, contractor) " +
                         "values (?, ?, ?, ?, ?)";
 
-        CarDAO carDAO = new CarDAOimp();
-
-        try (Connection connection = DBManager.getInstance().getConnection()) {
+        try (Connection connection = dbManager.getConnection()) {
 
             connection.setAutoCommit(false);
 
             Car.State currState = carDAO.getCarStateById(connection, repairInvoice.getCar().getId());
-            if (currState==null || currState!= Car.State.FREE) {
+            if (currState!= Car.State.FREE) {
                 connection.setAutoCommit(true);
                 throw new Exception("Car id=" + repairInvoice.getCar().getId() + " is not FREE");
             }
@@ -95,8 +101,8 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
                 "repair_info, amount, contractor, return_date " +
                 "FROM repair_invoices as repair_invoices " +
                 "WHERE  repair_invoices.id = ? ";
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
@@ -124,19 +130,15 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
      */
     private RepairInvoice createRepairInvoice(ResultSet resultSet) throws SQLException {
 
-        RepairInvoice repairInvoice = new RepairInvoice();
-        repairInvoice.setId(resultSet.getInt("id"));
-
-        CarDAOimp carDAO = new CarDAOimp();
-        repairInvoice.setCar(carDAO.findCarById(resultSet.getInt("car_id")));
-
-        repairInvoice.setDate(resultSet.getDate("date"));
-        repairInvoice.setReturnDate(resultSet.getDate("return_date"));
-        repairInvoice.setRepairInfo(resultSet.getString("repair_info"));
-        repairInvoice.setAmount((double) (resultSet.getInt("amount")/100));
-        repairInvoice.setContractor(resultSet.getString("contractor"));
-
-        return repairInvoice;
+        return RepairInvoice.builder()
+                .id(resultSet.getInt("id"))
+                .car(carDAO.findCarById(resultSet.getInt("car_id")))
+                .date(resultSet.getDate("date"))
+                .returnDate(resultSet.getDate("return_date"))
+                .repairInfo(resultSet.getString("repair_info"))
+                .amount((double) resultSet.getInt("amount")/100)
+                .contractor(resultSet.getString("contractor"))
+                .build();
     }
 
     @Override
@@ -146,8 +148,8 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
                 "FROM repair_invoices as repair_invoices " +
                 "LIMIT ?, ?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, start);
             statement.setInt(2, offset);
@@ -174,8 +176,8 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
 
         String sql = "SELECT COUNT(*) FROM repair_invoices as repair_invoices ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -205,7 +207,7 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
         String sql = "UPDATE repair_invoices " +
                 "SET return_date=? WHERE id=?";
 
-        try (Connection connection = DBManager.getInstance().getConnection()) {
+        try (Connection connection = dbManager.getConnection()) {
 
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
@@ -214,7 +216,6 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
 
                 statement.executeUpdate();
 
-                CarDAOimp carDAO = new CarDAOimp();
                 if (!carDAO.updateCarState(connection, car_id, Car.State.FREE)) {
                     throw new SQLException();
                 }
@@ -233,5 +234,10 @@ public class RepairInvoiceDAOimpl implements RepairInvoiceDAO {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public CarDAO getCarDAO() {
+        return carDAO;
     }
 }

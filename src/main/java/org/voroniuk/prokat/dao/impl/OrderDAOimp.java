@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.voroniuk.prokat.connectionpool.DBManager;
 import org.voroniuk.prokat.dao.CarDAO;
 import org.voroniuk.prokat.dao.OrderDAO;
+import org.voroniuk.prokat.dao.UserDAO;
 import org.voroniuk.prokat.entity.*;
 
 import java.sql.*;
@@ -21,13 +22,28 @@ import java.util.Locale;
  */
 
 public class OrderDAOimp implements OrderDAO {
+
+    private final DBManager dbManager;
+    private final CarDAO carDAO;
+    private final UserDAO userDAO;
     private final Logger LOG = Logger.getLogger(OrderDAOimp.class);
+
+    public OrderDAOimp(DBManager dbManager, CarDAO carDAO, UserDAO userDAO) {
+        this.dbManager = dbManager;
+        this.carDAO = carDAO;
+        this.userDAO = userDAO;
+    }
+
+    @Override
+    public CarDAO getCarDAO() {
+        return carDAO;
+    }
 
     /**
      * saveOrder method - insert new row into table orders
      * and update car state to ORDERED in the same transaction
      *
-     * @param order
+     * @param order - saving instance
      *
      * @author D. Voroniuk
      */
@@ -37,19 +53,17 @@ public class OrderDAOimp implements OrderDAO {
                         "with_driver, term, state, amount) " +
                         "values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        CarDAOimp carDAO = new CarDAOimp();
-
-        try (Connection connection = DBManager.getInstance().getConnection()) {
+        try (Connection connection = dbManager.getConnection()) {
 
             connection.setAutoCommit(false);
 
             Car.State currState = carDAO.getCarStateById(connection, order.getCar().getId());
-            if (currState==null || currState!= Car.State.FREE) {
+            if (currState!= Car.State.FREE) {
                 connection.setAutoCommit(true);
                 throw new Exception("Car id=" + order.getCar().getId() + " is not FREE");
             }
 
-            try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);) {
+            try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
                 statement.setDate(1, new Date(order.getDate().getTime()));
                 statement.setInt(2, order.getUser().getId());
@@ -100,8 +114,8 @@ public class OrderDAOimp implements OrderDAO {
 
                 "LIMIT ?, ?; ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, user_id);
             statement.setInt(2, user_id);
@@ -140,8 +154,8 @@ public class OrderDAOimp implements OrderDAO {
                 "WHERE CASE WHEN ?>0 THEN orders.user_id = ? ELSE TRUE END " +
                 "AND CASE WHEN ? THEN orders.state = ? ELSE TRUE END ";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, user_id);
             statement.setInt(2, user_id);
@@ -172,8 +186,8 @@ public class OrderDAOimp implements OrderDAO {
                 "with_driver, term, state, amount, return_date, reject_reason " +
                 "FROM orders as orders " +
                 "WHERE  orders.id = ? ";
-        try (Connection connection = DBManager.getInstance().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);) {
+        try (Connection connection = dbManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
@@ -200,33 +214,27 @@ public class OrderDAOimp implements OrderDAO {
      * @author D. Voroniuk
      */
     private Order createOrder(ResultSet resultSet) throws SQLException {
-        CarDAOimp carDAO = new CarDAOimp();
 
-        Order order = new Order();
-        order.setId(resultSet.getInt("id"));
-
-        order.setDate(resultSet.getDate("date"));
-
-        UserDAOimp userDAO = new UserDAOimp();
-        order.setUser(userDAO.findUserById(resultSet.getInt("user_id")));
-
-        order.setCar(carDAO.findCarById(resultSet.getInt("car_id")));
-
-        order.setPassportData(resultSet.getString("passport_data"));
-        order.setWithDriver(resultSet.getBoolean("with_driver"));
-        order.setTerm(resultSet.getInt("term"));
-        order.setAmount((double) resultSet.getInt("amount")/100);
-
-        order.setReturnDate(resultSet.getDate("return_date"));
-        order.setReject_reason(resultSet.getString("reject_reason"));
-
+        Order.State state = null;
         try {
-            order.setState(Order.State.valueOf(resultSet.getString("state").toUpperCase()));
+            state = Order.State.valueOf(resultSet.getString("state").toUpperCase());
         } catch (IllegalArgumentException e) {
-
+            LOG.warn(e);
         }
 
-        return order;
+        return Order.builder()
+                .id(resultSet.getInt("id"))
+                .date(resultSet.getDate("date"))
+                .user(userDAO.findUserById(resultSet.getInt("user_id")))
+                .car(carDAO.findCarById(resultSet.getInt("car_id")))
+                .passportData(resultSet.getString("passport_data"))
+                .withDriver(resultSet.getBoolean("with_driver"))
+                .term(resultSet.getInt("term"))
+                .amount((double) resultSet.getInt("amount")/100)
+                .returnDate(resultSet.getDate("return_date"))
+                .reject_reason(resultSet.getString("reject_reason"))
+                .state(state)
+                .build();
     }
 
     /**
@@ -245,10 +253,10 @@ public class OrderDAOimp implements OrderDAO {
         String sql = "UPDATE orders " +
                 "SET state=?, reject_reason=? WHERE id=?";
 
-        try (Connection connection = DBManager.getInstance().getConnection()) {
+        try (Connection connection = dbManager.getConnection()) {
             connection.setAutoCommit(false);
 
-            try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);) {
+            try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
                 statement.setString(1, "rejected");
                 statement.setString(2, reject_reason);
@@ -256,7 +264,6 @@ public class OrderDAOimp implements OrderDAO {
 
                 statement.executeUpdate();
 
-                CarDAO carDAO = new CarDAOimp();
                 if (!carDAO.updateCarState(connection, car_id, Car.State.FREE)) {
                     throw new SQLException();
                 }
@@ -291,7 +298,7 @@ public class OrderDAOimp implements OrderDAO {
         String sql = "UPDATE orders " +
                 "SET state=?, return_date=? WHERE id=?";
 
-        try (Connection connection = DBManager.getInstance().getConnection()) {
+        try (Connection connection = dbManager.getConnection()) {
 
             connection.setAutoCommit(false);
 
@@ -302,8 +309,7 @@ public class OrderDAOimp implements OrderDAO {
 
                 statement.executeUpdate();
 
-                CarDAOimp carDAO = new CarDAOimp();
-                if (!carDAO.updateCarState(connection, car_id, Car.State.FREE)) {
+                 if (!carDAO.updateCarState(connection, car_id, Car.State.FREE)) {
                     throw new SQLException();
                 }
 
@@ -329,7 +335,7 @@ public class OrderDAOimp implements OrderDAO {
         String sql = "UPDATE orders " +
                 "SET state=? WHERE id=?";
 
-        try (Connection connection = DBManager.getInstance().getConnection();
+        try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, state.toString().toLowerCase());

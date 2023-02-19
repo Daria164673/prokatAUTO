@@ -14,18 +14,19 @@ import java.util.List;
  * @author D. Voroniuk
  */
 public interface OrderDAO {
-    public boolean saveOrder(Order order);
+    boolean saveOrder(Order order);
 
-    public Order findOrderById(int id);
+    Order findOrderById(int id);
 
-    public List<Order> findOrders(int user_id, Order.State state, int start, int offset);
+    List<Order> findOrders(int user_id, Order.State state, int start, int offset);
 
-    public int countOrders(int user_id, Order.State state);
+    int countOrders(int user_id, Order.State state);
 
-    public boolean updateRejectOrder(int order_id, int car_id, String reject_reason);
+    boolean updateRejectOrder(int order_id, int car_id, String reject_reason);
 
-    public boolean updateReturnOrder(int order_id, int car_id);
+    boolean updateReturnOrder(int order_id, int car_id);
 
-    public boolean updateOrderState(int order_id, Order.State state);
+    boolean updateOrderState(int order_id, Order.State state);
 
+    CarDAO getCarDAO();
 }

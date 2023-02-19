@@ -36,14 +36,10 @@ public class AccountCommand implements Command {
 
         LOG.debug("user role is " + user.getRole());
         if (user.getRole() == User.Role.CUSTOMER) {
-
             forward = Path.COMMAND__USER_ACCOUNT;
         } else if (user.getRole() == User.Role.MANAGER) {
-
-            //forward = Path.COMMAND__MANAGER_ACCOUNT;
             forward = Path.COMMAND__ORDERS;
         } else if (user.getRole() == User.Role.ADMIN) {
-            //forward = Path.COMMAND__ADMIN_ACCOUNT;
             forward = Path.COMMAND__USERS;
         }
 

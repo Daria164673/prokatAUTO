@@ -9,6 +9,7 @@ import org.voroniuk.prokat.dao.impl.CarDAOimp;
 import org.voroniuk.prokat.dao.impl.OrderDAOimp;
 import org.voroniuk.prokat.entity.Car;
 import org.voroniuk.prokat.entity.Order;
+import org.voroniuk.prokat.utils.Utils;
 import org.voroniuk.prokat.web.Command;
 
 import java.util.Locale;
@@ -23,7 +24,12 @@ import java.util.ResourceBundle;
 
 public class ReturnOrderedCarCommand implements Command{
 
+    private final OrderDAO orderDAO;
     private static final Logger LOG = Logger.getLogger(ReturnOrderedCarCommand.class);
+
+    public ReturnOrderedCarCommand(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
+    }
 
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse resp) {
@@ -31,12 +37,8 @@ public class ReturnOrderedCarCommand implements Command{
         String msg;
         String forward = Path.COMMAND__ACCOUNT;
 
-        OrderDAO orderDAO = new OrderDAOimp();
+        Locale locale = Utils.getCheckLocale(req);
 
-        Locale locale = (Locale) req.getSession().getAttribute("locale");
-        if(locale == null){
-            locale = Locale.getDefault();
-        }
         ResourceBundle rb = ResourceBundle.getBundle("resources", locale);
 
         String strId = req.getParameter("order_id");
