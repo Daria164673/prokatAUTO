@@ -41,7 +41,7 @@ public class MainCommand implements Command {
         String forward = Path.PAGE__MAIN;
 
         //carousel with cars
-        List<Car> cars = carDAO.findCars(0, 0, new HashMap<>(), 1, 10);
+        List<Car> cars = carDAO.findCars(0, 0, Car.State.FREE, new HashMap<>(), 1, 10);
         req.getSession().setAttribute("cars", cars);
 
         LOG.debug("Main command ends forward to " + forward);

@@ -58,7 +58,7 @@ public class CarsCommandTest {
         when(session.getAttribute("user")).thenReturn(user);
 
         when(carDAO.countCars(anyInt(), anyInt())).thenReturn(0);
-        when(carDAO.findCars(anyInt(), anyInt(), anyMap(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        when(carDAO.findCars(anyInt(), anyInt(), any(), anyMap(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
 
         String forward = carsCommand.execute(request, response);
 
@@ -78,7 +78,7 @@ public class CarsCommandTest {
         when(request.getParameter("sorting")).thenReturn("name");
 
         when(carDAO.countCars(anyInt(), anyInt())).thenReturn(0);
-        when(carDAO.findCars(anyInt(), anyInt(), anyMap(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
+        when(carDAO.findCars(anyInt(), anyInt(), any(), anyMap(), anyInt(), anyInt())).thenReturn(new ArrayList<>());
 
         String forward = carsCommand.execute(request, response);
 

@@ -64,15 +64,15 @@ public class OrderDAOimp implements OrderDAO {
             }
 
             try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
-
-                statement.setDate(1, new Date(order.getDate().getTime()));
-                statement.setInt(2, order.getUser().getId());
-                statement.setInt(3, order.getCar().getId());
-                statement.setString(4, order.getPassportData());
-                statement.setBoolean(5, order.getWithDriver());
-                statement.setInt(6, order.getTerm());
-                statement.setString(7, order.getState().name().toLowerCase());
-                statement.setInt(8, (int) (order.getAmount() * 100));
+                int k=0;
+                statement.setDate(++k, new Date(order.getDate().getTime()));
+                statement.setInt(++k, order.getUser().getId());
+                statement.setInt(++k, order.getCar().getId());
+                statement.setString(++k, order.getPassportData());
+                statement.setBoolean(++k, order.getWithDriver());
+                statement.setInt(++k, order.getTerm());
+                statement.setString(++k, order.getState().name().toLowerCase());
+                statement.setInt(++k, (int) (order.getAmount() * 100));
 
                 statement.executeUpdate();
 
@@ -117,17 +117,18 @@ public class OrderDAOimp implements OrderDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, user_id);
-            statement.setInt(2, user_id);
+            int k=0;
+            statement.setInt(++k, user_id);
+            statement.setInt(++k, user_id);
             if (state == null) {
-                statement.setBoolean(3, false);
-                statement.setString(4, "");
+                statement.setBoolean(++k, false);
+                statement.setString(++k, "");
             } else {
-                statement.setBoolean(3, true);
-                statement.setString(4, state.toString().toLowerCase());
+                statement.setBoolean(++k, true);
+                statement.setString(++k, state.toString().toLowerCase());
             }
-            statement.setInt(5, start);
-            statement.setInt(6, offset);
+            statement.setInt(++k, start);
+            statement.setInt(++k, offset);
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -157,14 +158,15 @@ public class OrderDAOimp implements OrderDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, user_id);
-            statement.setInt(2, user_id);
+            int k=0;
+            statement.setInt(++k, user_id);
+            statement.setInt(++k, user_id);
             if (state == null) {
-                statement.setBoolean(3, false);
-                statement.setString(4, "");
+                statement.setBoolean(++k, false);
+                statement.setString(++k, "");
             } else {
-                statement.setBoolean(3, true);
-                statement.setString(4, state.toString().toLowerCase());
+                statement.setBoolean(++k, true);
+                statement.setString(++k, state.toString().toLowerCase());
             }
 
             statement.executeQuery();
@@ -258,9 +260,10 @@ public class OrderDAOimp implements OrderDAO {
 
             try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
-                statement.setString(1, "rejected");
-                statement.setString(2, reject_reason);
-                statement.setInt(3, order_id);
+                int k=0;
+                statement.setString(++k, "rejected");
+                statement.setString(++k, reject_reason);
+                statement.setInt(++k, order_id);
 
                 statement.executeUpdate();
 
@@ -303,9 +306,11 @@ public class OrderDAOimp implements OrderDAO {
             connection.setAutoCommit(false);
 
             try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
-                statement.setString(1, "finished");
-                statement.setDate(2, new Date(System.currentTimeMillis()));
-                statement.setInt(3, order_id);
+
+                int k=0;
+                statement.setString(++k, "finished");
+                statement.setDate(++k, new Date(System.currentTimeMillis()));
+                statement.setInt(++k, order_id);
 
                 statement.executeUpdate();
 

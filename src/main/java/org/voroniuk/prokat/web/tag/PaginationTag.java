@@ -36,6 +36,7 @@ public class PaginationTag extends TagSupport {
 
         try {
             out.print("<ul class=\"pagination\">");
+            //out.print("<li class=\"page-item\">");
             if (pageno > 2) {
                 out.print("<li class=\"page-item\">");
                 out.print(String.format("<a class=\"page-link\" href=\"%s&page=1\">%s</a>", current, rb.getString("all.href.first")));

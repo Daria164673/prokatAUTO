@@ -60,18 +60,18 @@
          </div>
     </div>
 
-    <div class="container cta-150" style="width: 1600px">
-            <div class="container" style="width: 1600px">
+    <div class="container cta-150">
+            <div class="container">
               <div class="row blog">
                 <div class="col-md-20 col-sm-20">
-                  <div id="blogCarousel" class="carousel slide container-blog" data-ride="carousel">
+                  <div id="blogCarousel" class="carousel slide" data-ride="carousel">
                     <ol class="carousel-indicators">
                       <li data-target="#blogCarousel" data-slide-to="0" class="active"></li>
                       <li data-target="#blogCarousel" data-slide-to="1"></li>
                     </ol>
 
                     <!-- Carousel items -->
-                    <div class="carousel-inner">
+                    <div class="carousel-inner" >
                       <div class="carousel-item active">
 
                       <div class="row">
@@ -192,25 +192,31 @@
 
 <style>
 
+.sidenav {
+  padding-top: 3%;
+}
+
 .cta-150 {
   margin-top: 30px;
-  padding-left: 8%;
-  padding-top: 7%;
+  padding-left: 0%;
+  padding-top: 5%;
 }
 .col-md-4{
-    padding-bottom:20px;
-    height: 400px;
+    padding-bottom:0px;
+    height: 430px;
+    -ms-flex: 0 0 20%;
+    flex: 0 0 20%;
+    max-width: 20%;
 }
 
 .white {
   color: #fff !important;
 }
 .mt{float: left;margin-top: -20px;padding-top: 20px;}
+
 .bg-blue-ui {
   background-color: #708198 !important;
 }
-
-figure img{width:300px; height:240px}
 
 #blogCarousel {
   padding-bottom: 100px;
@@ -236,9 +242,6 @@ figure img{width:300px; height:240px}
   background: #0fc9af;
 }
 
-
-
-
 .item-carousel-blog-block {
   outline: medium none;
   padding: 15px;
@@ -253,11 +256,6 @@ figure img{width:300px; height:240px}
 
 .item-box-blog-image {
   position: relative;
-}
-
-.item-box-blog-image figure img {
-  width: 100%;
-  height: auto;
 }
 
 .item-box-blog-date {
@@ -327,6 +325,25 @@ figure img{width:300px; height:240px}
 
 .btn.bg-blue-ui.white.read:hover {
   box-shadow: 0px 5px 15px inset #4d5f77;
+}
+
+.container {
+  max-width: 2300px;
+}
+
+.container {
+  max-width: 2300px;
+}
+
+.col-md-20 col-sm-20 {
+   -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.item-box-blog-image figure img {
+  width: 100%;
+  height: 240px;
 }
 
 </style>

@@ -19,7 +19,7 @@ public interface CarDAO {
 
     public Car findCarById(int id);
 
-    public List<Car> findCars(int brandId, int q_class_id, Map<String, Boolean> sortMap, int start, int offset);
+    public List<Car> findCars(int brandId, int q_class_id, Car.State state, Map<String, Boolean> sortMap, int start, int offset);
     public List<Car> findCars(List<String> brandsId, List<String> qClassId, Map<String, Boolean> sortMap, int start, int offset);
 
     public int countCars(int brandId, int q_class_id);

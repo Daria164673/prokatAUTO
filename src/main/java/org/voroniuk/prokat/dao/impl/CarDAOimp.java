@@ -66,7 +66,7 @@ public class CarDAOimp implements CarDAO {
         return null;
     }
 
-    public List<Car> findCars(int brandId, int q_class_id, Map<String, Boolean> sortMap, int start, int offset) {
+    public List<Car> findCars(int brandId, int q_class_id, Car.State state, Map<String, Boolean> sortMap, int start, int offset) {
         List<Car> res = new LinkedList<>();
         String sql =    "SELECT cars.id as car_id, brand_id, brands.name as brand_name, q_class_id, " +
                 "q_classes.name as q_class_name, model, car_number, img, IFNULL(prices.price,0) as price, " +
@@ -85,6 +85,7 @@ public class CarDAOimp implements CarDAO {
 
                 "WHERE CASE WHEN ?>0 THEN brand_id = ? ELSE TRUE END " +
                 "AND CASE WHEN ?>0 THEN q_class_id = ? ELSE TRUE END " +
+                "AND CASE WHEN ?<>'' THEN IFNULL(cars.curr_state,'') = ? ELSE TRUE END " +
 
                 Utils.getOrderByQueryText(sortMap) +
 
@@ -93,12 +94,15 @@ public class CarDAOimp implements CarDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, brandId);
-            statement.setInt(2, brandId);
-            statement.setInt(3, q_class_id);
-            statement.setInt(4, q_class_id);
-            statement.setInt(5, start);
-            statement.setInt(6, offset);
+            int k=0;
+            statement.setInt(++k, brandId);
+            statement.setInt(++k, brandId);
+            statement.setInt(++k, q_class_id);
+            statement.setInt(++k, q_class_id);
+            statement.setString(++k, state==null?"":state.name().toLowerCase(Locale.ROOT));
+            statement.setString(++k, state==null?"":state.name().toLowerCase(Locale.ROOT));
+            statement.setInt(++k, start);
+            statement.setInt(++k, offset);
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -127,10 +131,11 @@ public class CarDAOimp implements CarDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, brandId);
-            statement.setInt(2, brandId);
-            statement.setInt(3, q_class_id);
-            statement.setInt(4, q_class_id);
+            int k=0;
+            statement.setInt(++k, brandId);
+            statement.setInt(++k, brandId);
+            statement.setInt(++k, q_class_id);
+            statement.setInt(++k, q_class_id);
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -197,16 +202,17 @@ public class CarDAOimp implements CarDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setInt(1, car.getBrand().getId());
-            statement.setInt(2, car.getQualityClass().getId());
-            statement.setString(3, car.getModel());
-            statement.setString(4, car.getCar_number());
+            int k=0;
+            statement.setInt(++k, car.getBrand().getId());
+            statement.setInt(++k, car.getQualityClass().getId());
+            statement.setString(++k, car.getModel());
+            statement.setString(++k, car.getCar_number());
             if (car.getCurr_state()==null) {
-                statement.setString(5, "free");
+                statement.setString(++k, "free");
             } else {
-                statement.setString(5, car.getCurr_state().name().toLowerCase());
+                statement.setString(++k, car.getCurr_state().name().toLowerCase());
             }
-            statement.setString(6, car.getImgPath());
+            statement.setString(++k, car.getImgPath());
             statement.executeUpdate();
 
             try (ResultSet resultSet = statement.getGeneratedKeys()) {
@@ -232,12 +238,13 @@ public class CarDAOimp implements CarDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setInt(1, car.getBrand().getId());
-            statement.setInt(2, car.getQualityClass().getId());
-            statement.setString(3, car.getModel());
-            statement.setString(4, car.getCar_number());
-            statement.setString(5, car.getImgPath());
-            statement.setInt(6, car.getId());
+            int k=0;
+            statement.setInt(++k, car.getBrand().getId());
+            statement.setInt(++k, car.getQualityClass().getId());
+            statement.setString(++k, car.getModel());
+            statement.setString(++k, car.getCar_number());
+            statement.setString(++k, car.getImgPath());
+            statement.setInt(++k, car.getId());
 
             statement.executeUpdate();
 
@@ -372,10 +379,11 @@ public class CarDAOimp implements CarDAO {
         try (Connection connection = dbManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setInt(1, brandsId.size());
-            statement.setInt(2, qClassId.size());
-            statement.setInt(3, start);
-            statement.setInt(4, offset);
+            int k=0;
+            statement.setInt(++k, brandsId.size());
+            statement.setInt(++k, qClassId.size());
+            statement.setInt(++k, start);
+            statement.setInt(++k, offset);
 
             statement.executeQuery();
             try (ResultSet resultSet = statement.getResultSet()) {
